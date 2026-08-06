@@ -1,0 +1,1093 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es_MX\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: cetmix_tower_yaml
+#: model:res.groups,comment:cetmix_tower_yaml.group_export
+msgid ""
+"\n"
+"        Export data to YAML.\n"
+"    "
+msgstr ""
+"\n"
+"        Exportar datos a YAML.\n"
+"    "
+
+#. module: cetmix_tower_yaml
+#: model:res.groups,comment:cetmix_tower_yaml.group_import
+msgid ""
+"\n"
+"        Import data from YAML.\n"
+"    "
+msgstr ""
+"\n"
+"        Importar datos desde YAML.\n"
+"    "
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
+msgid "'%s' is not a valid model"
+msgstr "'%s' no es un modelo válido"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
+msgid "'invalid_model' is not a valid model"
+msgstr "'invalid_model' no es un modelo válido"
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid ""
+"<strong>Important:</strong> To maintain data consistency, the following\n"
+"                        model records will always be updated if they exist in Odoo:"
+msgstr ""
+"<strong>Importante:</strong> Para mantener la consistencia de los datos, los siguientes\n"
+"                        registros de modelos siempre se actualizarán si existen en Odoo:"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__add_manifest
+msgid "Add Manifest"
+msgstr "Agregar Manifiesto"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__explode_child_records
+msgid ""
+"Add entire child record definitions to the exported YAML file. Otherwise "
+"only references to child records will be added."
+msgstr ""
+"Agregar las definiciones completas de los registros hijos al archivo YAML "
+"exportado. De lo contrario, solo se agregarán referencias a los registros "
+"hijos."
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__file_prefix
+msgid ""
+"Add prefix to the exported YAML file name when this template is selected"
+msgstr ""
+"Agregar un prefijo al nombre del archivo YAML exportado cuando se selecciona"
+" esta plantilla"
+
+#. module: cetmix_tower_yaml
+#: model:res.groups,name:cetmix_tower_yaml.group_export
+#: model:res.groups,name:cetmix_tower_yaml.group_import
+msgid "Allow"
+msgstr "Permitir"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__manifest_author_string
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "Author"
+msgstr "Autor"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.constraint,message:cetmix_tower_yaml.constraint_cx_tower_yaml_manifest_author_yaml_manifest_author_name_uniq
+msgid "Author name must be unique."
+msgstr "El nombre del autor debe ser único."
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__manifest_author_ids
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__author_ids
+msgid "Authors"
+msgstr "Autores"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_scheduled_task_cv__reference
+msgid ""
+"Can contain English letters, digits and '_'. Leave blank to autogenerate"
+msgstr ""
+"Puede contener letras inglesas, dígitos y '_'. Deje en blanco para generar "
+"automáticamente"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_command
+msgid "Cetmix Tower Command"
+msgstr "Comando de Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_file
+msgid "Cetmix Tower File"
+msgstr "Archivo de Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_file_template
+msgid "Cetmix Tower File Template"
+msgstr "Plantilla de Archivo de Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_plan
+msgid "Cetmix Tower Flight Plan"
+msgstr "Plan de Vuelo de Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_plan_line
+msgid "Cetmix Tower Flight Plan Line"
+msgstr "Línea de Plan de Vuelo de Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_plan_line_action
+msgid "Cetmix Tower Flight Plan Line Action"
+msgstr "Acción de Línea de Plan de Vuelo de Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_jet_action
+msgid "Cetmix Tower Jet Action"
+msgstr "Acción Jet de Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_jet_state
+msgid "Cetmix Tower Jet State"
+msgstr "Estado Jet de Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_jet_template
+msgid "Cetmix Tower Jet Template"
+msgstr "Plantilla Jet de Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_jet_template_dependency
+msgid "Cetmix Tower Jet Template Dependency"
+msgstr "Dependencia de Plantilla Jet de Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_jet_waypoint_template
+msgid "Cetmix Tower Jet Waypoint Template"
+msgstr "Plantilla de Waypoint Jet de Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_key
+msgid "Cetmix Tower Key/Secret Storage"
+msgstr "Almacenamiento de Claves/Secretos de Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_os
+msgid "Cetmix Tower Operating System"
+msgstr "Sistema Operativo de Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_key_value
+msgid "Cetmix Tower Secret Value Storage"
+msgstr "Almacenamiento de Valores Secretos de Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_server
+msgid "Cetmix Tower Server"
+msgstr "Servidor de Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_server_log
+msgid "Cetmix Tower Server Log"
+msgstr "Registro de Servidor de Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_server_template
+msgid "Cetmix Tower Server Template"
+msgstr "Plantilla de Servidor de Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_shortcut
+msgid "Cetmix Tower Shortcut"
+msgstr "Acceso Directo de Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_tag
+msgid "Cetmix Tower Tag"
+msgstr "Etiqueta de Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_variable
+msgid "Cetmix Tower Variable"
+msgstr "Variable de Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_variable_option
+msgid "Cetmix Tower Variable Options"
+msgstr "Opciones de Variable de Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_variable_value
+msgid "Cetmix Tower Variable Values"
+msgstr "Valores de Variable de Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_yaml_export_wiz_download
+msgid "Cetmix Tower YAML Export File Download"
+msgstr "Descarga de Archivo de Exportación YAML de Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_yaml_export_wiz
+msgid "Cetmix Tower YAML Export Wizard"
+msgstr "Asistente de Exportación YAML de Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_yaml_import_wiz
+msgid "Cetmix Tower YAML Import Wizard"
+msgstr "Asistente de Importación YAML de Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_yaml_import_wiz_upload
+msgid "Cetmix Tower YAML Import Wizard Upload"
+msgstr "Subida del Asistente de Importación YAML de Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_yaml_mixin
+msgid "Cetmix Tower YAML rendering mixin"
+msgstr "Mixin de renderizado YAML de Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_download_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_upload_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "Close"
+msgstr "Cerrar"
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "Code preview"
+msgstr "Vista previa del código"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__manifest_author_string
+msgid "Comma-separated list"
+msgstr "Lista separada por comas"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields.selection,name:cetmix_tower_yaml.selection__cx_tower_yaml_import_wiz__if_record_exists__create
+msgid "Create a new record"
+msgstr "Crear un nuevo registro"
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.actions.act_window,help:cetmix_tower_yaml.action_yaml_manifest_author
+msgid "Create your first YAML manifest author!"
+msgstr "¡Cree su primer autor de manifiesto YAML!"
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.actions.act_window,help:cetmix_tower_yaml.action_yaml_manifest_template
+msgid "Create your first YAML manifest template!"
+msgstr "¡Cree su primera plantilla de manifiesto YAML!"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__create_uid
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz_download__create_uid
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__create_uid
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz_upload__create_uid
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_author__create_uid
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__create_date
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz_download__create_date
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__create_date
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz_upload__create_date
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_author__create_date
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__manifest_currency
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__manifest_currency
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__currency
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "Currency"
+msgstr "Moneda"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__currency
+msgid "Currency for pricing information."
+msgstr "Moneda para la información de precios."
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_export_wiz.py:0
+msgid "Currency is required when price is specified"
+msgstr "La moneda es obligatoria cuando se especifica un precio"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_manifest_template.py:0
+msgid "Custom"
+msgstr "Personalizada"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__license_text
+msgid "Custom license text when license type is Custom."
+msgstr ""
+"Texto de licencia personalizado cuando el tipo de licencia es Personalizada."
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_scheduled_task_cv
+msgid "Custom variable values for scheduled tasks"
+msgstr "Valores de variables personalizados para tareas programadas"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+msgid ""
+"Deferred relation resolution failed:\n"
+"%(details)s"
+msgstr ""
+"Falló la resolución de relaciones diferidas:\n"
+"%(details)s"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__manifest_description
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__manifest_description
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "Description"
+msgstr "Descripción"
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
+msgid "Detailed description (optional)"
+msgstr "Descripción detallada (opcional)"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz_download__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz_upload__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_author__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__display_name
+msgid "Display Name"
+msgstr "Nombre Mostrado"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+msgid "Error creating record '%(reference)s' in model '%(model)s': %(error)s"
+msgstr ""
+"Error al crear el registro '%(reference)s' en el modelo '%(model)s': "
+"%(error)s"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+msgid "Error updating record %(reference)s: %(error)s"
+msgstr "Error al actualizar el registro %(reference)s: %(error)s"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_manifest_template.py:0
+msgid "Euro"
+msgstr "Euro"
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid ""
+"Existing record will be updated with the new data. Related records, present in the YAML code, will be updated too.\n"
+"                        If any of those related records doesn't exist, it will be created automatically."
+msgstr ""
+"El registro existente se actualizará con los nuevos datos. Los registros relacionados presentes en el código YAML también se actualizarán.\n"
+"                        Si alguno de esos registros relacionados no existe, se creará automáticamente."
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__explode_child_records
+msgid "Explode Child Records"
+msgstr "Expandir Registros Hijos"
+
+#. module: cetmix_tower_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_command_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_file_template_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_jet_template_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_key_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_os_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_plan_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_scheduled_task_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_server_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_server_template_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_shortcut_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_tag_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_variable_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_variable_value_export_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_jet_template_view_form
+msgid "Export YAML"
+msgstr "Exportar YAML"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_mixin.py:0
+msgid "Failed to convert dictionary to YAML: %(error)s"
+msgstr "Error al convertir el diccionario a YAML: %(error)s"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_export_wiz.py:0
+msgid ""
+"Failed to encode YAML content. Please ensure all characters are UTF-8 "
+"compatible."
+msgstr ""
+"Error al codificar el contenido YAML. Asegúrese de que todos los caracteres "
+"sean compatibles con UTF-8."
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz_upload__file_name
+msgid "File Name"
+msgstr "Nombre de Archivo"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
+msgid "File is empty"
+msgstr "El archivo está vacío"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
+msgid "File is not a valid base64-encoded file"
+msgstr "El archivo no es un archivo válido codificado en base64"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__file_prefix
+msgid "File prefix"
+msgstr "Prefijo de archivo"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+msgid "Following secrets are used in the code:<br/>%(secrets)s"
+msgstr "Los siguientes secretos se utilizan en el código:<br/>%(secrets)s"
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
+msgid "Generate YAML file"
+msgstr "Generar archivo YAML"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz_download__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz_upload__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_author__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__id
+msgid "ID"
+msgstr "ID"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__if_record_exists
+msgid "If Record Exists"
+msgstr "Si el Registro Existe"
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "Import"
+msgstr "Importar"
+
+#. module: cetmix_tower_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_yaml_import_wiz_upload
+#: model:ir.ui.menu,name:cetmix_tower_yaml.menu_cetmix_tower_yaml_import
+msgid "Import YAML"
+msgstr "Importar YAML"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+msgid "Import result: %(model)s"
+msgstr "Resultado de la importación: %(model)s"
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "Information"
+msgstr "Información"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
+msgid "Invalid YAML file"
+msgstr "Archivo YAML no válido"
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "Key/Secrets"
+msgstr "Claves/Secretos"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__write_uid
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz_download__write_uid
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__write_uid
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz_upload__write_uid
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_author__write_uid
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización por"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__write_date
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz_download__write_date
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__write_date
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz_upload__write_date
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_author__write_date
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__manifest_name
+msgid "Leave this field blank if you don't want to create a manifest"
+msgstr "Deje este campo en blanco si no desea crear un manifiesto"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__manifest_license
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__manifest_license
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__license
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "License"
+msgstr "Licencia"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__manifest_license_text
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__license_text
+msgid "License Text"
+msgstr "Texto de Licencia"
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "License and pricing"
+msgstr "Licencia y precios"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__manifest_license_text
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "License text"
+msgstr "Texto de licencia"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_export_wiz.py:0
+msgid "License text is required for a custom license"
+msgstr "El texto de licencia es obligatorio para una licencia personalizada"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__license
+msgid "License used for the code snippet."
+msgstr "Licencia utilizada para el fragmento de código."
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__author_ids
+msgid "List of author names to include in the YAML manifest."
+msgstr "Lista de nombres de autores a incluir en el manifiesto YAML."
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__secret_list
+msgid "List of secrets present in the YAML file (formatted as HTML list)"
+msgstr ""
+"Lista de secretos presentes en el archivo YAML (formateada como lista HTML)"
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
+msgid "Manifest"
+msgstr "Manifiesto"
+
+#. module: cetmix_tower_yaml
+#: model:ir.ui.menu,name:cetmix_tower_yaml.menu_yaml_manifest_author_action
+msgid "Manifest Authors"
+msgstr "Autores del Manifiesto"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__manifest_template_id
+msgid "Manifest Template"
+msgstr "Plantilla de Manifiesto"
+
+#. module: cetmix_tower_yaml
+#: model:ir.ui.menu,name:cetmix_tower_yaml.menu_yaml_manifest_template
+msgid "Manifest Templates"
+msgstr "Plantillas de Manifiesto"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
+msgid "Model '%s' does not support YAML import"
+msgstr "El modelo '%s' no admite la importación YAML"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
+msgid "Model 'command_run_wizard' does not support YAML import"
+msgstr "El modelo 'command_run_wizard' no admite la importación YAML"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__model_names
+msgid "Model Names"
+msgstr "Nombres de Modelos"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__model_names
+msgid "Models to create records in"
+msgstr "Modelos en los que crear registros"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_scheduled_task_cv__name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_author__name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__name
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "Name"
+msgstr "Nombre"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__name
+msgid "Name of the manifest template."
+msgstr "Nombre de la plantilla de manifiesto."
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_export_wiz.py:0
+msgid "No YAML code is present."
+msgstr "No hay código YAML presente."
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_export_wiz.py:0
+msgid "No model or records selected"
+msgstr "No se seleccionó ningún modelo o registro"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+msgid "No records were created or updated"
+msgstr "No se creó ni actualizó ningún registro"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_export_wiz.py:0
+msgid "No valid records selected"
+msgstr "No se seleccionaron registros válidos"
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "OSs"
+msgstr "SO"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__preview_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__preview_code
+msgid "Preview Code"
+msgstr "Vista Previa del Código"
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
+msgid "Preview code"
+msgstr "Vista previa del código"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__manifest_price
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__manifest_price
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "Price"
+msgstr "Precio"
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_upload_view_form
+msgid "Process"
+msgstr "Procesar"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_manifest_template.py:0
+msgid "Provide Custom License Text when License is set to 'Custom'."
+msgstr ""
+"Proporcione el Texto de Licencia Personalizado cuando la Licencia esté "
+"establecida en 'Personalizada'."
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+msgid ""
+"Record %(record_model)s '%(record_reference)s': field '%(field)s' could not "
+"resolve %(target_model)s '%(target_reference)s'"
+msgstr ""
+"Registro %(record_model)s '%(record_reference)s': el campo '%(field)s' no "
+"pudo resolver %(target_model)s '%(target_reference)s'"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+msgid ""
+"Record '%(record)s': field '%(field)s' could not resolve %(target_model)s "
+"'%(target_reference)s'"
+msgstr ""
+"Registro '%(record)s': el campo '%(field)s' no pudo resolver "
+"%(target_model)s '%(target_reference)s'"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+msgid "Record Import"
+msgstr "Importación de Registros"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
+msgid "Record model is missing for record %s"
+msgstr "Falta el modelo del registro para el registro %s"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+msgid "Record reference is missing"
+msgstr "Falta la referencia del registro"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+msgid "Records of the following models were created or updated: %(models)s"
+msgstr ""
+"Se crearon o actualizaron registros de los siguientes modelos: %(models)s"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_scheduled_task_cv__reference
+msgid "Reference"
+msgstr "Referencia"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__remove_empty_values
+msgid "Remove Empty x2m Field Values"
+msgstr "Eliminar Valores Vacíos de Campos x2m"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__remove_empty_values
+msgid ""
+"Remove empty Many2one, Many2many and One2many field values from the exported"
+" YAML file."
+msgstr ""
+"Eliminar los valores vacíos de campos Many2one, Many2many y One2many del "
+"archivo YAML exportado."
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_scheduled_task
+msgid "Scheduled Task"
+msgstr "Tarea Programada"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__secret_list
+msgid "Secret List"
+msgstr "Lista de Secretos"
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
+msgid "Select a pre-defined template"
+msgstr "Seleccione una plantilla predefinida"
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
+msgid "Select a template to auto-populate manifest fields"
+msgstr ""
+"Seleccione una plantilla para completar automáticamente los campos del "
+"manifiesto"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__manifest_summary
+msgid "Short summary that includes core information. 160 symbols max"
+msgstr ""
+"Resumen breve que incluye la información principal. 160 caracteres como "
+"máximo"
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
+msgid "Short summary, 160 symbols max"
+msgstr "Resumen breve, 160 caracteres como máximo"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields.selection,name:cetmix_tower_yaml.selection__cx_tower_yaml_import_wiz__if_record_exists__skip
+msgid "Skip record"
+msgstr "Omitir registro"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__manifest_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__manifest_name
+msgid "Snippet Name"
+msgstr "Nombre del Fragmento"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__yaml_file_name
+msgid "Snippet file name without extension, eg 'my_snippet'"
+msgstr "Nombre del archivo del fragmento sin extensión, p. ej. 'my_snippet'"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__manifest_summary
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__manifest_summary
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "Summary"
+msgstr "Resumen"
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "Tags"
+msgstr "Etiquetas"
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "This may overwrite existing records. Proceed?"
+msgstr "Esto puede sobrescribir registros existentes. ¿Desea continuar?"
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid ""
+"To create new entities instead of updating existing ones, remove or modify\n"
+"                        the <code>reference</code> field in the YAML code for those entities."
+msgstr ""
+"Para crear nuevas entidades en lugar de actualizar las existentes, elimine o modifique\n"
+"                        el campo <code>reference</code> en el código YAML de esas entidades."
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__preview_code
+msgid "Toggle to show or hide YAML code preview"
+msgstr "Alternar para mostrar u ocultar la vista previa del código YAML"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_manifest_template.py:0
+msgid "US Dollar"
+msgstr "Dólar Estadounidense"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields.selection,name:cetmix_tower_yaml.selection__cx_tower_yaml_import_wiz__if_record_exists__update
+msgid "Update existing record"
+msgstr "Actualizar registro existente"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__manifest_version
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
+msgid "Use the Major.Minor.Patch format, e.g. 1.2.3"
+msgstr "Utilice el formato Mayor.Menor.Parche, p. ej. 1.2.3"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_mixin.py:0
+#: code:addons/cetmix_tower_yaml/tests/test_tower_yaml_mixin.py:0
+msgid "Values must be a dictionary"
+msgstr "Los valores deben ser un diccionario"
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "Variable Options"
+msgstr "Opciones de Variable"
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "Variables"
+msgstr "Variables"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__manifest_version
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__manifest_version
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__version
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "Version"
+msgstr "Versión"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__version
+msgid "Version in Major.Minor.Patch format, e.g. 1.0.0"
+msgstr "Versión en formato Mayor.Menor.Parche, p. ej. 1.0.0"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_export_wiz.py:0
+msgid "Version must be in format Major.Minor.Patch, e.g. 1.2.3"
+msgstr "La versión debe estar en formato Mayor.Menor.Parche, p. ej. 1.2.3"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_manifest_template.py:0
+msgid "Version must be in the Major.Minor.Patch format, e.g. 1.2.3"
+msgstr "La versión debe estar en el formato Mayor.Menor.Parche, p. ej. 1.2.3"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__manifest_website
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__manifest_website
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__website
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "Website"
+msgstr "Sitio Web"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__website
+msgid "Website URL for the manifest."
+msgstr "URL del sitio web para el manifiesto."
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__if_record_exists
+msgid "What to do if record with the same reference already exists"
+msgstr "Qué hacer si ya existe un registro con la misma referencia"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_mixin.py:0
+#: code:addons/cetmix_tower_yaml/tests/test_tower_yaml_mixin.py:0
+msgid "Wrong value for 'access_level' key: %(acv)s"
+msgstr "Valor incorrecto para la clave 'access_level': %(acv)s"
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_jet_template_view_form
+msgid "YAML"
+msgstr "YAML"
+
+#. module: cetmix_tower_yaml
+#: model:ir.module.category,name:cetmix_tower_yaml.ir_module_category_tower_yaml_export
+msgid "YAML Export"
+msgstr "Exportación YAML"
+
+#. module: cetmix_tower_yaml
+#: model:ir.ui.menu,name:cetmix_tower_yaml.menu_yaml_settings_root
+msgid "YAML Export/Import"
+msgstr "Exportación/Importación YAML"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__yaml_file_name
+msgid "YAML File Name"
+msgstr "Nombre del Archivo YAML"
+
+#. module: cetmix_tower_yaml
+#: model:ir.module.category,name:cetmix_tower_yaml.ir_module_category_tower_yaml_import
+msgid "YAML Import"
+msgstr "Importación YAML"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_yaml_manifest_author
+msgid "YAML Manifest Author"
+msgstr "Autor de Manifiesto YAML"
+
+#. module: cetmix_tower_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_yaml_manifest_author
+msgid "YAML Manifest Authors"
+msgstr "Autores de Manifiesto YAML"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_yaml_manifest_tmpl
+msgid "YAML Manifest Template"
+msgstr "Plantilla de Manifiesto YAML"
+
+#. module: cetmix_tower_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_yaml_manifest_template
+msgid "YAML Manifest Templates"
+msgstr "Plantillas de Manifiesto YAML"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
+msgid "YAML file cannot be decoded properly"
+msgstr "El archivo YAML no se puede decodificar correctamente"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
+msgid "YAML file doesn't contain any records"
+msgstr "El archivo YAML no contiene ningún registro"
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.actions.act_window,help:cetmix_tower_yaml.action_yaml_manifest_author
+msgid ""
+"YAML manifest authors represent organizations or users who are authors of "
+"YAML manifests."
+msgstr ""
+"Los autores de manifiesto YAML representan organizaciones o usuarios que son"
+" autores de manifiestos YAML."
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.actions.act_window,help:cetmix_tower_yaml.action_yaml_manifest_template
+msgid ""
+"YAML manifest templates represent pre-defined YAML manifests with their "
+"metadata and configuration."
+msgstr ""
+"Las plantillas de manifiesto YAML representan manifiestos YAML predefinidos "
+"con sus metadatos y configuración."
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
+msgid ""
+"YAML version is higher than version supported by your Cetmix Tower instance."
+" %(code_version)s > %(tower_version)s"
+msgstr ""
+"La versión del YAML es superior a la versión admitida por su instancia de "
+"Cetmix Tower. %(code_version)s > %(tower_version)s"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_action__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_state__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_template__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_template_dependency__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_waypoint_template__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_key__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_key_value__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_os__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line_action__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_scheduled_task__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_scheduled_task_cv__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_log__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_shortcut__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_option__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_mixin__yaml_code
+msgid "Yaml Code"
+msgstr "Código Yaml"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz_download__yaml_file
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz_upload__yaml_file
+msgid "Yaml File"
+msgstr "Archivo Yaml"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz_download__yaml_file_name
+msgid "Yaml File Name"
+msgstr "Nombre del Archivo Yaml"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
+msgid "Yaml file doesn't contain valid data"
+msgstr "El archivo Yaml no contiene datos válidos"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_mixin.py:0
+msgid "You are not allowed to create records from YAML"
+msgstr "No tiene permiso para crear registros desde YAML"
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_jet_template_view_form
+msgid "You must be a member of the \"YAML/Export\" group to export data as YAML."
+msgstr ""
+"Debe ser miembro del grupo \"YAML/Exportar\" para exportar datos como YAML."
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
+msgid "my_snippet.yaml"
+msgstr "my_snippet.yaml"

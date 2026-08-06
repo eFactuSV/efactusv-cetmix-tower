@@ -1,0 +1,35 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: cetmix_tower_aws
+#: model:ir.model,name:cetmix_tower_aws.model_cx_tower_command
+msgid "Cetmix Tower Command"
+msgstr "Comando de Cetmix Tower"
+
+#. module: cetmix_tower_aws
+#. odoo-python
+#: code:addons/cetmix_tower_aws/models/cx_tower_command.py:0
+msgid ""
+"Python 'boto3' library for AWS services. Available methods: 'client', "
+"'resource', 'Session'<br/>Supports AWS services like EC2, S3, RDS, Lambda, "
+"CloudWatch, etc.<br/>Please check the <a "
+"href='https://boto3.amazonaws.com/v1/documentation/api/latest/index.html' "
+"target='_blank'>Boto3 Documentation</a> for the detailed information about "
+"the services and methods."
+msgstr ""
+"Librería Python 'boto3' para servicios de AWS. Métodos disponibles: "
+"'client', 'resource', 'Session'<br/>Compatible con servicios de AWS como "
+"EC2, S3, RDS, Lambda, CloudWatch, etc.<br/>Consulte la <a "
+"href='https://boto3.amazonaws.com/v1/documentation/api/latest/index.html' "
+"target='_blank'>documentación de Boto3</a> para información detallada sobre "
+"los servicios y métodos."
