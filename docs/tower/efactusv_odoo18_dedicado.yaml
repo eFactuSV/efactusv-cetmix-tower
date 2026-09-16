@@ -1,0 +1,1207 @@
+# =============================================================================
+# efactusv - Blueprint Cetmix Tower: Odoo 18 dedicado (1 servidor OVH = 1 cliente)
+# Replica el stack de efactusv-odoo-deploy (odoo build + postgres:15 + mailpit
+# + nginx en contenedor + certbot en contenedor) y lo automatiza con Tower.
+#
+# Importar en: Cetmix Tower > Settings > YAML > Import (o botón "Import YAML")
+# Antes de importar crea en Keys and Secrets los secretos listados abajo
+# (los secretos NO viajan en el YAML, solo sus referencias).
+# =============================================================================
+cetmix_tower_yaml_version: 1
+records:
+
+# -----------------------------------------------------------------------------
+# 1. SECRETOS (solo referencia; el valor se rellena a mano en Tower)
+# -----------------------------------------------------------------------------
+- cetmix_tower_model: key
+  reference: EFACTUSV_ODOO_DB_PASSWORD
+  name: efactusv - Odoo DB password
+  key_type: s
+  note: Contraseña PostgreSQL de las instancias. Se rellena por jet (o global).
+- cetmix_tower_model: key
+  reference: EFACTUSV_ODOO_ADMIN_PASSWORD
+  name: efactusv - Odoo admin_passwd / password del admin
+  key_type: s
+- cetmix_tower_model: key
+  reference: EFACTUSV_GITHUB_TOKEN
+  name: efactusv - GitHub token (lectura repos privados)
+  key_type: s
+  note: Fine-grained PAT con permiso Contents:read sobre porti1876/efactusv
+- cetmix_tower_model: key
+  reference: OVH_APPLICATION_KEY
+  name: OVH application key
+  key_type: s
+- cetmix_tower_model: key
+  reference: OVH_APPLICATION_SECRET
+  name: OVH application secret
+  key_type: s
+- cetmix_tower_model: key
+  reference: OVH_CONSUMER_KEY
+  name: OVH consumer key
+  key_type: s
+
+# -----------------------------------------------------------------------------
+# 2. VARIABLES
+# -----------------------------------------------------------------------------
+- cetmix_tower_model: variable
+  reference: instance_name
+  name: Instance Name
+  variable_type: s
+  validation_pattern: ^[a-z0-9][a-z0-9-]+$
+  validation_message: Minúsculas, números y guiones. Ej. amissv
+  note: Identificador técnico. Se usa en rutas, nombres de contenedor y red.
+- cetmix_tower_model: variable
+  reference: instance_domain
+  name: Instance Domain
+  variable_type: s
+  note: FQDN público. Ej. amissv.efactusv.com
+- cetmix_tower_model: variable
+  reference: db_name
+  name: Odoo Database Name
+  variable_type: s
+  validation_pattern: ^[a-z0-9_]+$
+- cetmix_tower_model: variable
+  reference: base_dir
+  name: Base Directory
+  variable_type: s
+  note: Raíz de despliegue en el servidor. Ej. /opt/efactusv
+- cetmix_tower_model: variable
+  reference: addons_repo_url
+  name: Addons Repo URL (sin credenciales)
+  variable_type: s
+  note: Ej. github.com/porti1876/efactusv.git  (SIN https://)
+- cetmix_tower_model: variable
+  reference: addons_branch
+  name: Addons Branch
+  variable_type: s
+- cetmix_tower_model: variable
+  reference: odoo_image_tag
+  name: Odoo base image tag
+  variable_type: s
+  note: Tag de la imagen oficial odoo usada en el Dockerfile. Ej. 18.0
+- cetmix_tower_model: variable
+  reference: odoo_workers
+  name: Odoo Workers
+  variable_type: s
+  validation_pattern: ^[1-9][0-9]*$
+- cetmix_tower_model: variable
+  reference: admin_email
+  name: Administrator Email
+  variable_type: s
+  note: Login del admin de la instancia y correo para Let's Encrypt
+- cetmix_tower_model: variable
+  reference: initial_modules
+  name: Initial Modules
+  variable_type: s
+  note: Lista separada por comas para odoo -i. Ej. base,l10n_sv
+- cetmix_tower_model: variable
+  reference: modules_to_update
+  name: Modules To Update
+  variable_type: s
+  note: Lista separada por comas para odoo -u. Se pide al ejecutar el plan de despliegue.
+- cetmix_tower_model: variable
+  reference: ovh_cloud_project
+  name: OVH Public Cloud project (serviceName)
+  variable_type: s
+  note: ID del proyecto Public Cloud. Obtener con GET /cloud/project
+- cetmix_tower_model: variable
+  reference: ovh_cloud_region
+  name: OVH Public Cloud region
+  variable_type: s
+  note: Ej. BHS5 (Canadá), GRA11 / SBG5 (Francia), WAW1 (Polonia)
+- cetmix_tower_model: variable
+  reference: ovh_cloud_flavor
+  name: OVH Public Cloud flavor
+  variable_type: s
+  note: Ej. b3-8 (2 vCPU/8 GB), b3-16, d2-8. Ver GET /cloud/project/{id}/flavor
+- cetmix_tower_model: variable
+  reference: ovh_cloud_image
+  name: OVH Public Cloud image
+  variable_type: s
+  note: Nombre exacto de la imagen. Ej. Debian 12
+- cetmix_tower_model: variable
+  reference: tower_ssh_public_key
+  name: Tower SSH public key
+  variable_type: s
+  note: Clave pública (ssh-ed25519 AAAA...) que OVH inyecta en la instancia. No es secreto.
+- cetmix_tower_model: variable
+  reference: tower_ssh_key_ref
+  name: Tower SSH private key reference
+  variable_type: s
+  note: Referencia del registro Key (SSH Key) en Keys and Secrets. Ej. SSH_TOWER_EFACTUSV
+- cetmix_tower_model: variable
+  reference: ovh_server_template
+  name: Tower server template reference
+  variable_type: s
+  note: Plantilla de servidor con la que se registra la instancia. Ej. efactusv_ovh_cloud_debian12
+- cetmix_tower_model: variable
+  reference: new_server_name
+  name: New server name
+  variable_type: s
+  note: Nombre de la instancia en OVH y del servidor en Tower. Ej. OVH-AMISSV-01
+- cetmix_tower_model: variable
+  reference: ovh_zone_name
+  name: OVH DNS Zone
+  variable_type: s
+  note: Ej. efactusv.com
+- cetmix_tower_model: variable
+  reference: ovh_endpoint
+  name: OVH Endpoint
+  variable_type: s
+  note: ovh-eu / ovh-ca / ovh-us
+
+# -----------------------------------------------------------------------------
+# 3. PLANTILLAS DE ARCHIVO (se renderizan por jet y se suben por SFTP)
+# -----------------------------------------------------------------------------
+- cetmix_tower_model: file_template
+  reference: efactusv_ded_dockerfile
+  name: efactusv dedicado - Dockerfile
+  source: tower
+  file_type: text
+  file_name: Dockerfile
+  server_dir: '{{ base_dir }}/{{ instance_name }}'
+  code: |
+    FROM odoo:{{ odoo_image_tag }}
+    USER root
+    RUN pip3 install --break-system-packages \
+        pycryptodome xlrd xlsxwriter
+    USER odoo
+
+- cetmix_tower_model: file_template
+  reference: efactusv_ded_compose
+  name: efactusv dedicado - docker-compose.yml
+  source: tower
+  file_type: text
+  file_name: docker-compose.yml
+  server_dir: '{{ base_dir }}/{{ instance_name }}'
+  code: |
+    services:
+      db:
+        image: postgres:15
+        container_name: {{ instance_name }}-db
+        restart: always
+        environment:
+          - POSTGRES_DB=postgres
+          - POSTGRES_USER=odoo
+          - POSTGRES_PASSWORD=#!cxtower.secret.EFACTUSV_ODOO_DB_PASSWORD!#
+        networks:
+          - odoo_network
+        volumes:
+          - db-data:/var/lib/postgresql/data
+
+      odoo:
+        container_name: {{ instance_name }}-odoo
+        build:
+          context: ./
+          dockerfile: ./Dockerfile
+        restart: always
+        depends_on:
+          - db
+          - mailpit
+        expose:
+          - "8069"
+          - "8071"
+          - "8072"
+        networks:
+          - odoo_network
+        volumes:
+          - odoo-data:/var/lib/odoo
+          - ./addons/efactusv:/mnt/extra-addons
+          - ./config:/etc/odoo
+        entrypoint: "/usr/bin/odoo -c /etc/odoo/odoo.conf"
+
+      mailpit:
+        image: axllent/mailpit:v1.22
+        container_name: {{ instance_name }}-mailpit
+        restart: always
+        volumes:
+          - mail-data:/data
+        ports:
+          - "127.0.0.1:8025:8025"
+          - "127.0.0.1:1025:1025"
+        networks:
+          - odoo_network
+        environment:
+          MP_MAX_MESSAGES: 5000
+          MP_DATABASE: /data/mailpit.db
+          MP_SMTP_AUTH_ACCEPT_ANY: 1
+          MP_SMTP_AUTH_ALLOW_INSECURE: 1
+
+      nginx:
+        image: nginx:alpine
+        container_name: {{ instance_name }}-nginx
+        restart: always
+        depends_on:
+          - odoo
+        ports:
+          - "80:80"
+          - "443:443"
+        networks:
+          - odoo_network
+        volumes:
+          - ./nginx/conf.d:/etc/nginx/conf.d:ro
+          - ./nginx/webroot:/var/www/html
+          - certbot-etc:/etc/letsencrypt
+          - certbot-var:/var/lib/letsencrypt
+
+      certbot:
+        image: certbot/certbot
+        container_name: {{ instance_name }}-certbot
+        volumes:
+          - certbot-etc:/etc/letsencrypt
+          - certbot-var:/var/lib/letsencrypt
+          - ./nginx/webroot:/var/www/html
+        depends_on:
+          - nginx
+
+    volumes:
+      db-data:
+      odoo-data:
+      mail-data:
+      certbot-etc:
+      certbot-var:
+
+    networks:
+      odoo_network:
+        driver: bridge
+
+- cetmix_tower_model: file_template
+  reference: efactusv_ded_odoo_conf
+  name: efactusv dedicado - config/odoo.conf
+  source: tower
+  file_type: text
+  file_name: odoo.conf
+  server_dir: '{{ base_dir }}/{{ instance_name }}/config'
+  code: |
+    [options]
+    addons_path = /mnt/extra-addons
+    admin_passwd = #!cxtower.secret.EFACTUSV_ODOO_ADMIN_PASSWORD!#
+
+    # PostgreSQL local
+    db_host = db
+    db_port = 5432
+    db_user = odoo
+    db_password = #!cxtower.secret.EFACTUSV_ODOO_DB_PASSWORD!#
+    db_name = {{ db_name }}
+    dbfilter = ^{{ db_name }}$
+    list_db = False
+
+    debug_mode = False
+    email_from = False
+
+    # Logs a stdout: asi "docker logs" y el Server Log de Tower los ven
+    log_level = info
+
+    # Performance
+    limit_memory_hard = 7600000000
+    limit_memory_soft = 6000000000
+    limit_request = 8192
+    limit_time_cpu = 60000
+    limit_time_real = 120000
+    workers = {{ odoo_workers }}
+    max_cron_threads = 1
+    gevent_port = 8072
+
+    # Proxy / Nginx
+    proxy_mode = True
+
+    # SMTP -> Mailpit
+    smtp_server = mailpit
+    smtp_port = 1025
+    smtp_ssl = False
+    smtp_user = False
+    smtp_password = False
+
+- cetmix_tower_model: file_template
+  reference: efactusv_ded_nginx_http
+  name: efactusv dedicado - nginx/conf.d/default.conf (HTTP, pre-SSL)
+  source: tower
+  file_type: text
+  file_name: default.conf
+  server_dir: '{{ base_dir }}/{{ instance_name }}/nginx/conf.d'
+  code: |
+    server {
+        listen 80;
+        server_name {{ instance_domain }};
+
+        # Webroot para Certbot
+        location /.well-known/acme-challenge/ {
+            root /var/www/html;
+        }
+
+        # Proxy hacia Odoo mientras no haya SSL
+        location / {
+            proxy_pass http://odoo:8069;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_redirect off;
+        }
+
+        location /websocket {
+            proxy_pass http://odoo:8072;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Real-IP $remote_addr;
+        }
+
+        client_max_body_size 200M;
+        proxy_read_timeout 720s;
+        proxy_connect_timeout 720s;
+        proxy_send_timeout 720s;
+    }
+
+- cetmix_tower_model: file_template
+  reference: efactusv_ded_nginx_ssl
+  name: efactusv dedicado - nginx/ssl.conf.template (HTTPS)
+  source: tower
+  file_type: text
+  file_name: ssl.conf.template
+  server_dir: '{{ base_dir }}/{{ instance_name }}/nginx'
+  code: |
+    server {
+        listen 80;
+        server_name {{ instance_domain }};
+
+        # Webroot para Certbot (renovación)
+        location /.well-known/acme-challenge/ {
+            root /var/www/html;
+        }
+
+        # Redirigir todo HTTP -> HTTPS
+        location / {
+            return 301 https://$host$request_uri;
+        }
+    }
+
+    server {
+        listen 443 ssl;
+        server_name {{ instance_domain }};
+
+        # Certificados manejados por Certbot
+        ssl_certificate /etc/letsencrypt/live/{{ instance_domain }}/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/{{ instance_domain }}/privkey.pem;
+
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers HIGH:!aNULL:!MD5;
+
+        # Proxy hacia Odoo
+        location / {
+            proxy_pass http://odoo:8069;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto https;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_redirect off;
+        }
+
+        # Websocket (bus) Odoo 17/18 - puerto 8072
+        location /websocket {
+            proxy_pass http://odoo:8072;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto https;
+            proxy_set_header X-Real-IP $remote_addr;
+        }
+
+        # Long polling (compatibilidad)
+        location /longpolling {
+            proxy_pass http://odoo:8072;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto https;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_redirect off;
+        }
+
+        client_max_body_size 200M;
+        proxy_read_timeout 720s;
+        proxy_connect_timeout 720s;
+        proxy_send_timeout 720s;
+    }
+
+# -----------------------------------------------------------------------------
+# 4. COMANDOS
+# -----------------------------------------------------------------------------
+
+# --- 4.1 Preparación del servidor (una vez por VPS, con sudo) ----------------
+- cetmix_tower_model: command
+  reference: efactusv_ded_host_prepare
+  name: efactusv dedicado - Preparar host (Docker + dirs)
+  action: ssh_command
+  access_level: manager
+  allow_parallel_run: false
+  note: Equivale a install.sh de efactusv-odoo-deploy. Idempotente. Ejecutar con sudo.
+  code: |
+    set -e
+    export DEBIAN_FRONTEND=noninteractive
+    if ! command -v docker >/dev/null 2>&1; then
+      apt-get update
+      apt-get install -y ca-certificates curl git
+      install -m 0755 -d /etc/apt/keyrings
+      curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+      chmod a+r /etc/apt/keyrings/docker.asc
+      echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(. /etc/os-release && echo "$VERSION_CODENAME") stable" > /etc/apt/sources.list.d/docker.list
+      apt-get update
+      apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    fi
+    apt-get install -y git dnsutils curl
+    systemctl enable --now docker
+    TOWER_USER=$(logname 2>/dev/null || echo "$SUDO_USER")
+    [ -n "$TOWER_USER" ] && usermod -aG docker "$TOWER_USER" || true
+    mkdir -p {{ base_dir }}/backups
+    [ -n "$TOWER_USER" ] && chown -R "$TOWER_USER":"$TOWER_USER" {{ base_dir }} || true
+    docker --version && docker compose version
+
+# --- 4.2 Estructura y archivos de la instancia -----------------------------
+- cetmix_tower_model: command
+  reference: efactusv_ded_mkdirs
+  name: efactusv dedicado - Crear estructura de directorios
+  action: ssh_command
+  access_level: manager
+  code: |
+    mkdir -p {{ base_dir }}/{{ instance_name }}/config \
+             {{ base_dir }}/{{ instance_name }}/nginx/conf.d \
+             {{ base_dir }}/{{ instance_name }}/nginx/webroot \
+             {{ base_dir }}/{{ instance_name }}/addons
+
+- cetmix_tower_model: command
+  reference: efactusv_ded_push_dockerfile
+  name: efactusv dedicado - Subir Dockerfile
+  action: file_using_template
+  access_level: manager
+  file_template_id: efactusv_ded_dockerfile
+  if_file_exists: overwrite
+- cetmix_tower_model: command
+  reference: efactusv_ded_push_compose
+  name: efactusv dedicado - Subir docker-compose.yml
+  action: file_using_template
+  access_level: manager
+  file_template_id: efactusv_ded_compose
+  if_file_exists: overwrite
+- cetmix_tower_model: command
+  reference: efactusv_ded_push_odoo_conf
+  name: efactusv dedicado - Subir config/odoo.conf
+  action: file_using_template
+  access_level: manager
+  file_template_id: efactusv_ded_odoo_conf
+  if_file_exists: overwrite
+- cetmix_tower_model: command
+  reference: efactusv_ded_push_nginx_http
+  name: efactusv dedicado - Subir nginx default.conf (HTTP)
+  action: file_using_template
+  access_level: manager
+  file_template_id: efactusv_ded_nginx_http
+  if_file_exists: overwrite
+- cetmix_tower_model: command
+  reference: efactusv_ded_push_nginx_ssl
+  name: efactusv dedicado - Subir nginx ssl.conf.template
+  action: file_using_template
+  access_level: manager
+  file_template_id: efactusv_ded_nginx_ssl
+  if_file_exists: overwrite
+
+# --- 4.3 Código: clonar/actualizar addons efactusv (repo privado) ------------
+- cetmix_tower_model: command
+  reference: efactusv_ded_addons_sync
+  name: efactusv dedicado - Clonar/actualizar addons efactusv
+  action: ssh_command
+  access_level: manager
+  path: '{{ base_dir }}/{{ instance_name }}'
+  note: Sustituye al git submodule de efactusv-odoo-deploy. El token nunca se guarda en disco.
+  code: |
+    set -e
+    REPO_URL="https://x-access-token:#!cxtower.secret.EFACTUSV_GITHUB_TOKEN!#@{{ addons_repo_url }}"
+    if [ -d addons/efactusv/.git ]; then
+      git -C addons/efactusv remote set-url origin "$REPO_URL"
+      git -C addons/efactusv fetch --depth 1 origin {{ addons_branch }}
+      git -C addons/efactusv checkout -q {{ addons_branch }}
+      git -C addons/efactusv reset -q --hard origin/{{ addons_branch }}
+      git -C addons/efactusv remote set-url origin "https://{{ addons_repo_url }}"
+      echo "addons actualizados: $(git -C addons/efactusv rev-parse --short HEAD)"
+    else
+      git clone --branch {{ addons_branch }} --depth 1 "$REPO_URL" addons/efactusv
+      git -C addons/efactusv remote set-url origin "https://{{ addons_repo_url }}"
+      echo "addons clonados: $(git -C addons/efactusv rev-parse --short HEAD)"
+    fi
+
+# --- 4.4 Docker ------------------------------------------------------------
+- cetmix_tower_model: command
+  reference: efactusv_ded_build
+  name: efactusv dedicado - docker compose build
+  action: ssh_command
+  access_level: manager
+  path: '{{ base_dir }}/{{ instance_name }}'
+  code: docker compose build --pull odoo
+
+- cetmix_tower_model: command
+  reference: efactusv_ded_up_db
+  name: efactusv dedicado - Levantar PostgreSQL y esperar
+  action: ssh_command
+  access_level: manager
+  path: '{{ base_dir }}/{{ instance_name }}'
+  code: |
+    set -e
+    docker compose up -d db
+    for i in $(seq 1 60); do
+      if docker compose exec -T db pg_isready -U odoo -q; then
+        echo "PostgreSQL listo tras ${i}s"; exit 0
+      fi
+      sleep 1
+    done
+    echo "Timeout esperando PostgreSQL"; exit 1
+
+- cetmix_tower_model: command
+  reference: efactusv_ded_init_db
+  name: efactusv dedicado - Inicializar base de datos Odoo
+  action: ssh_command
+  access_level: manager
+  path: '{{ base_dir }}/{{ instance_name }}'
+  note: Idempotente. Si la BD ya existe no hace nada.
+  code: |
+    set -e
+    if docker compose exec -T db psql -U odoo -d postgres -Atc "select 1 from pg_database where datname='{{ db_name }}'" | grep -q 1; then
+      echo "La base {{ db_name }} ya existe, se omite la inicialización"
+      exit 0
+    fi
+    docker compose run --rm --no-deps -T --entrypoint /usr/bin/odoo odoo \
+      -c /etc/odoo/odoo.conf -d {{ db_name }} -i {{ initial_modules }} \
+      --without-demo=all --stop-after-init
+
+- cetmix_tower_model: command
+  reference: efactusv_ded_set_admin
+  name: efactusv dedicado - Configurar usuario admin
+  action: ssh_command
+  access_level: manager
+  path: '{{ base_dir }}/{{ instance_name }}'
+  code: |
+    set -e
+    printf '%s\n' "admin = env.ref('base.user_admin'); admin.write({'login': '{{ admin_email }}', 'email': '{{ admin_email }}', 'password': '#!cxtower.secret.EFACTUSV_ODOO_ADMIN_PASSWORD!#'}); env['ir.config_parameter'].sudo().set_param('web.base.url', 'https://{{ instance_domain }}'); env['ir.config_parameter'].sudo().set_param('web.base.url.freeze', 'True'); env.cr.commit(); print('admin configurado')" \
+      | docker compose run --rm --no-deps -T --entrypoint /usr/bin/odoo odoo \
+        shell -c /etc/odoo/odoo.conf -d {{ db_name }} --no-http
+
+- cetmix_tower_model: command
+  reference: efactusv_ded_up
+  name: efactusv dedicado - docker compose up -d
+  action: ssh_command
+  access_level: manager
+  path: '{{ base_dir }}/{{ instance_name }}'
+  code: docker compose up -d && docker compose ps
+
+- cetmix_tower_model: command
+  reference: efactusv_ded_stop
+  name: efactusv dedicado - docker compose stop
+  action: ssh_command
+  access_level: manager
+  path: '{{ base_dir }}/{{ instance_name }}'
+  code: docker compose stop
+
+- cetmix_tower_model: command
+  reference: efactusv_ded_restart_odoo
+  name: efactusv dedicado - Reiniciar contenedor Odoo
+  action: ssh_command
+  access_level: user
+  path: '{{ base_dir }}/{{ instance_name }}'
+  code: docker compose restart odoo
+
+- cetmix_tower_model: command
+  reference: efactusv_ded_update_modules
+  name: efactusv dedicado - Actualizar módulos (-u)
+  action: ssh_command
+  access_level: manager
+  path: '{{ base_dir }}/{{ instance_name }}'
+  note: Usa la variable modules_to_update (ej. l10n_sv,efactusv_base). Rellenar al ejecutar.
+  code: |
+    set -e
+    docker compose stop odoo
+    docker compose run --rm --no-deps -T --entrypoint /usr/bin/odoo odoo \
+      -c /etc/odoo/odoo.conf -d {{ db_name }} -u {{ modules_to_update }} --stop-after-init
+    docker compose up -d odoo
+
+- cetmix_tower_model: command
+  reference: efactusv_ded_destroy
+  name: efactusv dedicado - DESTRUIR instancia (down -v + rm)
+  action: ssh_command
+  access_level: root
+  path: '{{ base_dir }}/{{ instance_name }}'
+  note: Hace un pg_dump final a base_dir/backups antes de borrar todo.
+  code: |
+    set -e
+    mkdir -p {{ base_dir }}/backups
+    if docker compose ps -q db | grep -q .; then
+      docker compose exec -T db pg_dump -U odoo -Fc {{ db_name }} > {{ base_dir }}/backups/{{ instance_name }}-final-{{ tower.tools.today_underscore }}.dump || true
+    fi
+    docker compose down --volumes --remove-orphans
+    cd /
+    rm -rf -- '{{ base_dir }}/{{ instance_name }}'
+
+# --- 4.5 DNS en OVH (Python, corre en el Odoo madre) -------------------------
+- cetmix_tower_model: command
+  reference: efactusv_ded_dns_register
+  name: "efactusv dedicado - OVH DNS: crear/actualizar registro A"
+  action: python_code
+  access_level: manager
+  note: Idempotente. Apunta instance_domain a la IPv4 del servidor del jet.
+  code: |
+    client = ovh.Client(
+        endpoint={{ ovh_endpoint }},
+        application_key=#!cxtower.secret.OVH_APPLICATION_KEY!#,
+        application_secret=#!cxtower.secret.OVH_APPLICATION_SECRET!#,
+        consumer_key=#!cxtower.secret.OVH_CONSUMER_KEY!#,
+    )
+    zone = {{ ovh_zone_name }}
+    hostname = {{ instance_domain }}
+    target_ip = {{ tower.server.ipv4 }}
+    subdomain = hostname[: -(len(zone) + 1)]
+    path = "/domain/zone/" + zone + "/record"
+    records = client.get(path, subDomain=subdomain, fieldType="A")
+    if not records:
+        client.post(path, fieldType="A", subDomain=subdomain, target=target_ip, ttl=300)
+        msg = "Registro A creado: " + hostname + " -> " + target_ip
+    else:
+        record_path = path + "/" + str(records[0])
+        record = client.get(record_path)
+        if record.get("target") != target_ip:
+            client.put(record_path, target=target_ip, subDomain=subdomain, ttl=300)
+            msg = "Registro A actualizado: " + hostname + " -> " + target_ip
+        else:
+            msg = "Registro A ya correcto: " + hostname + " -> " + target_ip
+    client.post("/domain/zone/" + zone + "/refresh")
+    result = {"exit_code": 0, "message": msg}
+
+- cetmix_tower_model: command
+  reference: efactusv_ded_dns_unregister
+  name: "efactusv dedicado - OVH DNS: borrar registro A"
+  action: python_code
+  access_level: root
+  code: |
+    client = ovh.Client(
+        endpoint={{ ovh_endpoint }},
+        application_key=#!cxtower.secret.OVH_APPLICATION_KEY!#,
+        application_secret=#!cxtower.secret.OVH_APPLICATION_SECRET!#,
+        consumer_key=#!cxtower.secret.OVH_CONSUMER_KEY!#,
+    )
+    zone = {{ ovh_zone_name }}
+    hostname = {{ instance_domain }}
+    subdomain = hostname[: -(len(zone) + 1)]
+    path = "/domain/zone/" + zone + "/record"
+    deleted = 0
+    for record_id in client.get(path, subDomain=subdomain, fieldType="A"):
+        client.delete(path + "/" + str(record_id))
+        deleted += 1
+    client.post("/domain/zone/" + zone + "/refresh")
+    result = {"exit_code": 0, "message": "Registros A borrados: " + str(deleted)}
+
+- cetmix_tower_model: command
+  reference: efactusv_ded_dns_wait
+  name: efactusv dedicado - Esperar propagación DNS
+  action: ssh_command
+  access_level: manager
+  code: |
+    for i in $(seq 1 30); do
+      IP=$(dig +short A {{ instance_domain }} @1.1.1.1 | tail -1)
+      if [ "$IP" = "{{ tower.server.ipv4 }}" ]; then
+        echo "DNS OK: {{ instance_domain }} -> $IP (intento $i)"; exit 0
+      fi
+      echo "Esperando DNS... ({{ instance_domain }} -> '$IP')"; sleep 10
+    done
+    echo "DNS no propagado a {{ tower.server.ipv4 }}"; exit 1
+
+# --- 4.6 SSL (equivale a setup-ssl.sh) ---------------------------------------
+- cetmix_tower_model: command
+  reference: efactusv_ded_ssl
+  name: efactusv dedicado - Emitir SSL con certbot y activar HTTPS
+  action: ssh_command
+  access_level: manager
+  path: '{{ base_dir }}/{{ instance_name }}'
+  note: Réplica de setup-ssl.sh. --keep-until-expiring lo hace idempotente (no gasta cuota de Let's Encrypt).
+  code: |
+    set -e
+    DOMAIN="{{ instance_domain }}"
+    EMAIL="{{ admin_email }}"
+    # 1. nginx solo HTTP (default.conf ya subido por Tower)
+    docker compose up -d nginx
+    docker compose exec -T nginx nginx -t
+    # 2. certificado
+    docker compose run --rm -T certbot certonly \
+        --webroot --webroot-path=/var/www/html \
+        --email "$EMAIL" --agree-tos --no-eff-email \
+        --keep-until-expiring \
+        -d "$DOMAIN"
+    # 3. activar config HTTPS
+    cp nginx/ssl.conf.template nginx/conf.d/default.conf
+    docker compose exec -T nginx nginx -t
+    docker compose restart nginx
+    echo "SSL activo para https://$DOMAIN"
+
+- cetmix_tower_model: command
+  reference: efactusv_ded_ssl_renew
+  name: efactusv dedicado - Renovar certificado SSL
+  action: ssh_command
+  access_level: user
+  path: '{{ base_dir }}/{{ instance_name }}'
+  code: docker compose run --rm -T certbot renew && docker compose restart nginx
+
+# --- 4.7 Verificación y registro en Tower -----------------------------------
+- cetmix_tower_model: command
+  reference: efactusv_ded_health
+  name: efactusv dedicado - Healthcheck HTTPS
+  action: ssh_command
+  access_level: user
+  code: |
+    curl --fail --silent --show-error --retry 12 --retry-delay 5 \
+      -o /dev/null -w "HTTP %{http_code} https://{{ instance_domain }}/web/login\n" \
+      https://{{ instance_domain }}/web/login
+
+- cetmix_tower_model: command
+  reference: efactusv_ded_set_url
+  name: efactusv dedicado - Guardar URL en el jet
+  action: python_code
+  access_level: manager
+  code: |
+    url = "https://" + {{ instance_domain }}
+    if jet:
+        jet.write({"url": url})
+    elif server:
+        server.write({"url": url})
+    result = {"exit_code": 0, "message": "URL registrada: " + url}
+
+- cetmix_tower_model: command
+  reference: efactusv_ded_logs
+  name: efactusv dedicado - Ver logs de Odoo
+  action: ssh_command
+  access_level: user
+  code: docker logs --tail 200 {{ instance_name }}-odoo
+
+- cetmix_tower_model: command
+  reference: efactusv_ded_backup
+  name: efactusv dedicado - Backup BD + filestore
+  action: ssh_command
+  access_level: manager
+  path: '{{ base_dir }}/{{ instance_name }}'
+  code: |
+    set -e
+    mkdir -p {{ base_dir }}/backups
+    docker compose exec -T db pg_dump -U odoo -Fc {{ db_name }} \
+      > {{ base_dir }}/backups/{{ instance_name }}-{{ tower.tools.today_underscore }}.dump
+    docker run --rm \
+      -v {{ instance_name }}_odoo-data:/data:ro \
+      -v {{ base_dir }}/backups:/backup \
+      alpine tar czf /backup/{{ instance_name }}-filestore-{{ tower.tools.today_underscore }}.tar.gz -C /data .
+    find {{ base_dir }}/backups -name "{{ instance_name }}-*" -mtime +14 -delete
+    ls -lh {{ base_dir }}/backups | tail -5
+
+# -----------------------------------------------------------------------------
+# 5. FLIGHT PLANS
+# -----------------------------------------------------------------------------
+- cetmix_tower_model: plan
+  reference: efactusv_ded_server_prepare
+  name: efactusv dedicado - Preparar servidor (Docker)
+  access_level: manager
+  allow_parallel_run: false
+  on_error_action: e
+  line_ids:
+  - sequence: 10
+    use_sudo: true
+    command_id: efactusv_ded_host_prepare
+
+- cetmix_tower_model: plan
+  reference: efactusv_ded_create
+  name: efactusv dedicado - Crear instancia (0 -> producción)
+  access_level: manager
+  allow_parallel_run: false
+  on_error_action: e
+  note: |
+    Réplica automatizada de efactusv-odoo-deploy:
+    dirs -> archivos -> addons -> build -> db -> init -> admin -> up -> DNS -> SSL -> health -> url
+  line_ids:
+  - sequence: 10
+    command_id: efactusv_ded_mkdirs
+  - sequence: 20
+    command_id: efactusv_ded_push_dockerfile
+  - sequence: 30
+    command_id: efactusv_ded_push_compose
+  - sequence: 40
+    command_id: efactusv_ded_push_odoo_conf
+  - sequence: 50
+    command_id: efactusv_ded_push_nginx_http
+  - sequence: 60
+    command_id: efactusv_ded_push_nginx_ssl
+  - sequence: 70
+    command_id: efactusv_ded_addons_sync
+  - sequence: 80
+    command_id: efactusv_ded_build
+  - sequence: 90
+    command_id: efactusv_ded_up_db
+  - sequence: 100
+    command_id: efactusv_ded_init_db
+  - sequence: 110
+    command_id: efactusv_ded_set_admin
+  - sequence: 120
+    command_id: efactusv_ded_up
+  - sequence: 130
+    command_id: efactusv_ded_dns_register
+  - sequence: 140
+    command_id: efactusv_ded_dns_wait
+  - sequence: 150
+    command_id: efactusv_ded_ssl
+  - sequence: 160
+    command_id: efactusv_ded_health
+  - sequence: 170
+    command_id: efactusv_ded_set_url
+
+- cetmix_tower_model: plan
+  reference: efactusv_ded_start
+  name: efactusv dedicado - Arrancar
+  access_level: manager
+  on_error_action: e
+  line_ids:
+  - sequence: 10
+    command_id: efactusv_ded_up
+  - sequence: 20
+    command_id: efactusv_ded_health
+
+- cetmix_tower_model: plan
+  reference: efactusv_ded_stop_plan
+  name: efactusv dedicado - Detener
+  access_level: manager
+  on_error_action: e
+  line_ids:
+  - sequence: 10
+    command_id: efactusv_ded_stop
+
+- cetmix_tower_model: plan
+  reference: efactusv_ded_destroy_plan
+  name: efactusv dedicado - Destruir (backup final + borrar todo + DNS)
+  access_level: root
+  on_error_action: e
+  line_ids:
+  - sequence: 10
+    command_id: efactusv_ded_destroy
+  - sequence: 20
+    command_id: efactusv_ded_dns_unregister
+
+- cetmix_tower_model: plan
+  reference: efactusv_ded_deploy_code
+  name: efactusv dedicado - Desplegar código (git pull + build + -u)
+  access_level: manager
+  allow_parallel_run: false
+  on_error_action: e
+  note: Operación del día a día. Pide modules_to_update al ejecutar.
+  line_ids:
+  - sequence: 10
+    command_id: efactusv_ded_addons_sync
+  - sequence: 20
+    command_id: efactusv_ded_push_dockerfile
+  - sequence: 30
+    command_id: efactusv_ded_build
+  - sequence: 40
+    command_id: efactusv_ded_update_modules
+  - sequence: 50
+    command_id: efactusv_ded_health
+
+# -----------------------------------------------------------------------------
+# 6. PLANTILLA DE SERVIDOR (VPS OVH Debian 12, usuario deploy)
+# -----------------------------------------------------------------------------
+- cetmix_tower_model: server_template
+  reference: efactusv_ovh_debian12
+  name: efactusv - VPS OVH Debian 12 (Docker)
+  ssh_port: 22
+  ssh_username: deploy
+  ssh_auth_mode: k
+  use_sudo: n
+  note: |
+    Crear el VPS en OVH, crear usuario deploy con sudo NOPASSWD y la clave pública de Tower.
+    Al crear el servidor desde esta plantilla se ejecuta el plan de preparación (Docker).
+  flight_plan_id: efactusv_ded_server_prepare
+  variable_value_ids:
+  - variable_id: base_dir
+    value_char: /opt/efactusv
+  - variable_id: ovh_endpoint
+    value_char: ovh-eu
+  - variable_id: ovh_zone_name
+    value_char: efactusv.com
+
+# -----------------------------------------------------------------------------
+# 6b. OVH PUBLIC CLOUD: crear la instancia desde Tower (equivalente a "Hetzner")
+#     Ejecutar desde cualquier servidor (el comando ignora `server`) o como
+#     Scheduled Task. Requiere rights GET/POST/DELETE /cloud/* en el token OVH.
+# -----------------------------------------------------------------------------
+- cetmix_tower_model: server_template
+  reference: efactusv_ovh_cloud_debian12
+  name: efactusv - OVH Public Cloud Debian 12 (usuario debian)
+  ssh_port: 22
+  ssh_username: debian
+  ssh_auth_mode: k
+  use_sudo: n
+  note: |
+    Para instancias creadas por el comando "OVH Cloud: crear instancia".
+    La imagen Debian 12 de OVH ya trae el usuario `debian` con sudo NOPASSWD y la clave SSH inyectada:
+    no hace falta bootstrap manual. Sin flight plan: el comando lo lanza cuando SSH responde.
+  variable_value_ids:
+  - variable_id: base_dir
+    value_char: /opt/efactusv
+  - variable_id: ovh_endpoint
+    value_char: ovh-eu
+  - variable_id: ovh_zone_name
+    value_char: efactusv.com
+
+- cetmix_tower_model: command
+  reference: efactusv_ovh_cloud_create_server
+  name: "efactusv - OVH Cloud: crear instancia y registrarla en Tower"
+  action: python_code
+  access_level: root
+  allow_parallel_run: false
+  note: |
+    Idempotente: si ya existe una instancia con ese nombre en la región, la reutiliza;
+    si ya existe el servidor en Tower, solo actualiza la IP.
+    Pasos: clave SSH en el proyecto -> flavor/imagen por nombre -> POST instance -> esperar ACTIVE + IPv4
+    -> create_server_from_template -> esperar SSH -> guardar host key -> ejecutar plan "Preparar servidor".
+  code: |
+    client = ovh.Client(
+        endpoint={{ ovh_endpoint }},
+        application_key=#!cxtower.secret.OVH_APPLICATION_KEY!#,
+        application_secret=#!cxtower.secret.OVH_APPLICATION_SECRET!#,
+        consumer_key=#!cxtower.secret.OVH_CONSUMER_KEY!#,
+    )
+    project = {{ ovh_cloud_project }}
+    region = {{ ovh_cloud_region }}
+    flavor_name = {{ ovh_cloud_flavor }}
+    image_name = {{ ovh_cloud_image }}
+    server_name = {{ new_server_name }}
+    public_key = {{ tower_ssh_public_key }}
+    ssh_key_ref = {{ tower_ssh_key_ref }}
+    template_ref = {{ ovh_server_template }}
+    base = "/cloud/project/" + project
+    log = []
+
+    # 1. Clave SSH de Tower registrada en el proyecto
+    key_id = None
+    for k in client.get(base + "/sshkey"):
+        if k.get("publicKey", "").split(" ")[:2] == public_key.split(" ")[:2]:
+            key_id = k["id"]
+    if not key_id:
+        key_id = client.post(base + "/sshkey", name="cetmix-tower", publicKey=public_key)["id"]
+        log.append("Clave SSH registrada en OVH")
+
+    # 2. Flavor e imagen por nombre en la región
+    flavor_id = None
+    for f in client.get(base + "/flavor", region=region):
+        if f.get("name") == flavor_name and f.get("osType") == "linux":
+            flavor_id = f["id"]
+            break
+    image_id = None
+    for i in client.get(base + "/image", region=region, osType="linux"):
+        if i.get("name") == image_name:
+            image_id = i["id"]
+            break
+    if not flavor_id or not image_id:
+        result = {"exit_code": 1, "message": "Flavor o imagen no encontrados en " + region + ": " + flavor_name + " / " + image_name}
+    else:
+        # 3. Instancia (reutiliza si ya existe con ese nombre)
+        instance = None
+        for i in client.get(base + "/instance", region=region):
+            if i.get("name") == server_name:
+                instance = i
+        if not instance:
+            instance = client.post(
+                base + "/instance",
+                flavorId=flavor_id, imageId=image_id, name=server_name,
+                region=region, sshKeyId=key_id, monthlyBilling=False,
+            )
+            log.append("Instancia creada: " + instance["id"])
+        else:
+            log.append("Instancia ya existente: " + instance["id"])
+
+        # 4. Esperar ACTIVE + IPv4 pública (máx. 10 min)
+        ipv4 = None
+        status = None
+        for _ in range(60):
+            inst = client.get(base + "/instance/" + instance["id"])
+            status = inst.get("status")
+            if status == "ACTIVE":
+                for a in inst.get("ipAddresses", []):
+                    if a.get("type") == "public" and a.get("version") == 4:
+                        ipv4 = a.get("ip")
+                if ipv4:
+                    break
+            if status == "ERROR":
+                break
+            time.sleep(10)
+        if not ipv4:
+            result = {"exit_code": 1, "message": "La instancia no llegó a ACTIVE con IPv4 (estado: " + str(status) + ")"}
+        else:
+            log.append("IPv4: " + ipv4)
+
+            # 5. Registrar / actualizar en Tower
+            Server = env["cx.tower.server"]
+            srv = Server.search([("name", "=", server_name)], limit=1)
+            if srv:
+                srv.write({"ip_v4_address": ipv4})
+                log.append("Servidor Tower actualizado: " + srv.reference)
+            else:
+                srv = env["cx.tower.server.template"].create_server_from_template(
+                    template_ref, server_name, ipv4=ipv4, ssh_key=ssh_key_ref,
+                    partner=server.partner_id if server else None,
+                )
+                log.append("Servidor Tower creado: " + srv.reference)
+            srv.write({"url": "https://" + ipv4, "note": "OVH Public Cloud " + region + " / " + flavor_name + " / instance " + instance["id"]})
+            env.cr.commit()
+
+            # 6. Esperar a que SSH responda (cloud-init), guardar host key
+            ssh_ok = False
+            for _ in range(30):
+                srv.write({"host_key": False, "skip_host_key": True})
+                if srv.test_ssh_connection(raise_on_error=False, return_notification=False).get("status") == 0:
+                    ssh_ok = True
+                    break
+                time.sleep(10)
+            srv.write({"skip_host_key": False})
+            if not ssh_ok:
+                result = {"exit_code": 1, "message": "\n".join(log) + "\nSSH no responde en " + ipv4 + " (revisa firewall/cloud-init)"}
+            else:
+                srv.write({"host_key": srv._get_host_key_from_host()})
+                env.cr.commit()
+                # 7. Preparar el host (Docker) con el plan de la plantilla
+                plan = env["cx.tower.plan"].get_by_reference("efactusv_ded_server_prepare")
+                srv.run_flight_plan(plan)
+                log.append("Plan 'Preparar servidor (Docker)' lanzado")
+                result = {"exit_code": 0, "message": "\n".join(log)}
+
+- cetmix_tower_model: command
+  reference: efactusv_ovh_cloud_delete_server
+  name: "efactusv - OVH Cloud: BORRAR instancia"
+  action: python_code
+  access_level: root
+  note: Borra la instancia OVH cuyo nombre = new_server_name y archiva el servidor en Tower. Irreversible.
+  code: |
+    client = ovh.Client(
+        endpoint={{ ovh_endpoint }},
+        application_key=#!cxtower.secret.OVH_APPLICATION_KEY!#,
+        application_secret=#!cxtower.secret.OVH_APPLICATION_SECRET!#,
+        consumer_key=#!cxtower.secret.OVH_CONSUMER_KEY!#,
+    )
+    project = {{ ovh_cloud_project }}
+    region = {{ ovh_cloud_region }}
+    server_name = {{ new_server_name }}
+    base = "/cloud/project/" + project
+    deleted = 0
+    for i in client.get(base + "/instance", region=region):
+        if i.get("name") == server_name:
+            client.delete(base + "/instance/" + i["id"])
+            deleted += 1
+    srv = env["cx.tower.server"].search([("name", "=", server_name)], limit=1)
+    if srv:
+        srv.write({"active": False})
+    result = {"exit_code": 0, "message": "Instancias borradas: " + str(deleted) + (" | servidor Tower archivado" if srv else "")}
+
+- cetmix_tower_model: plan
+  reference: efactusv_ovh_cloud_provision
+  name: "efactusv - OVH Cloud: aprovisionar VPS nuevo"
+  access_level: root
+  allow_parallel_run: false
+  on_error_action: e
+  note: Pide new_server_name al ejecutar. Ejecutar desde cualquier servidor ya registrado.
+  line_ids:
+  - sequence: 10
+    command_id: efactusv_ovh_cloud_create_server
+
+# -----------------------------------------------------------------------------
+# 7. JET TEMPLATE (1 jet = 1 cliente = 1 instancia Odoo)
+# -----------------------------------------------------------------------------
+- cetmix_tower_model: jet_template
+  reference: efactusv_odoo18_dedicado
+  name: efactusv Odoo 18 dedicado (docker nginx+certbot)
+  limit_per_server: 1
+  show_in_create_wizard: true
+  plan_install_id: efactusv_ded_server_prepare
+  note: |
+    Réplica del stack efactusv-odoo-deploy. Un jet por servidor (nginx ocupa 80/443).
+    Variables requeridas al lanzar: instance_name, instance_domain, db_name.
+  variable_value_ids:
+  - variable_id: instance_name
+    value_char: ''
+    required: true
+  - variable_id: instance_domain
+    value_char: ''
+    required: true
+  - variable_id: db_name
+    value_char: ''
+    required: true
+  - variable_id: base_dir
+    value_char: /opt/efactusv
+  - variable_id: addons_repo_url
+    value_char: github.com/porti1876/efactusv.git
+  - variable_id: addons_branch
+    value_char: '18.0'
+  - variable_id: odoo_image_tag
+    value_char: '18.0'
+  - variable_id: odoo_workers
+    value_char: '2'
+  - variable_id: admin_email
+    value_char: admin@efactusv.com
+  - variable_id: initial_modules
+    value_char: base
+  - variable_id: ovh_zone_name
+    value_char: efactusv.com
+  - variable_id: ovh_endpoint
+    value_char: ovh-eu
+  action_ids:
+  - reference: efactusv_ded_action_create
+    name: Create
+    priority: 1
+    access_level: manager
+    state_transit_id: starting
+    state_to_id: running
+    state_error_id: stopped
+    plan_id: efactusv_ded_create
+  - reference: efactusv_ded_action_stop
+    name: Stop
+    priority: 10
+    access_level: manager
+    state_from_id: running
+    state_transit_id: stopping
+    state_to_id: stopped
+    state_error_id: stopped
+    plan_id: efactusv_ded_stop_plan
+  - reference: efactusv_ded_action_start
+    name: Start
+    priority: 10
+    access_level: manager
+    state_from_id: stopped
+    state_transit_id: starting
+    state_to_id: running
+    state_error_id: stopped
+    plan_id: efactusv_ded_start
+  - reference: efactusv_ded_action_destroy
+    name: Destroy
+    priority: 99
+    access_level: root
+    state_from_id: stopped
+    state_transit_id: destroying
+    state_error_id: stopped
+    plan_id: efactusv_ded_destroy_plan
+  server_log_ids:
+  - reference: efactusv_ded_log_odoo
+    name: Logs Odoo (docker logs)
+    log_type: command
+    command_id: efactusv_ded_logs
+    use_sudo: false
+  scheduled_task_ids:
+  - reference: efactusv_ded_task_backup
+    name: efactusv dedicado - Backup diario
+    action: command
+    command_id: efactusv_ded_backup
+    interval_number: 1
+    interval_type: days
