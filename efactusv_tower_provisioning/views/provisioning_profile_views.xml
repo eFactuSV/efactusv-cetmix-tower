@@ -46,6 +46,7 @@
                         </group>
                         <group>
                             <field name="base_domain" placeholder="efactusv.com" />
+                            <field name="auto_verify" />
                         </group>
                     </group>
                     <notebook>

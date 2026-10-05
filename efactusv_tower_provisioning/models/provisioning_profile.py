@@ -23,6 +23,14 @@ class TowerProvisioningProfile(models.Model):
         "cx.tower.server", required=True, ondelete="restrict", tracking=True
     )
     base_domain = fields.Char(required=True, default="efactusv.com", tracking=True)
+    auto_verify = fields.Boolean(
+        string="Verify Automatically",
+        default=True,
+        tracking=True,
+        help="Mark the request as verified as soon as the create flight plan, which "
+        "ends with the HTTPS health check, finishes successfully. When unchecked, an "
+        "operator reviews each instance before it is delivered.",
+    )
     variable_value_ids = fields.One2many(
         "cx.tower.provisioning.profile.variable", "profile_id", string="Variables"
     )

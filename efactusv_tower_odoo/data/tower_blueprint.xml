@@ -152,7 +152,20 @@ data_dir = /var/lib/odoo
         <field name="path">{{ base_dir }}/{{ instance_name }}</field>
         <field
             name="code"
-        ><![CDATA[printf '%s\n' "admin = env.ref('base.user_admin'); admin.write({'login': '{{ admin_email }}', 'email': '{{ admin_email }}', 'password': '#!cxtower.secret.EFACTUSV_ODOO_ADMIN_PASSWORD!#'})" | docker compose run -T --rm web odoo shell -d {{ instance_name }} --no-http]]></field>
+        ><![CDATA[printf '%s\n' "admin = env.ref('base.user_admin'); admin.write({'login': '{{ admin_email }}', 'email': '{{ admin_email }}', 'password': '#!cxtower.secret.EFACTUSV_ODOO_ADMIN_PASSWORD!#'}); env.cr.commit()" | docker compose run -T --rm web odoo shell -d {{ instance_name }} --no-http]]></field>
+        <field name="access_level">2</field>
+    </record>
+    <!-- odoo shell hace rollback al salir: sin env.cr.commit() no se guarda.
+         customer_email está validado por patrón en la variable y en Python
+         (sin comillas ni espacios), y la contraseña es token_urlsafe. -->
+    <record id="command_configure_customer" model="cx.tower.command">
+        <field name="name">Configure Odoo customer user</field>
+        <field name="reference">efactusv_odoo_configure_customer</field>
+        <field name="action">ssh_command</field>
+        <field name="path">{{ base_dir }}/{{ instance_name }}</field>
+        <field
+            name="code"
+        ><![CDATA[printf '%s\n' "login = '{{ customer_email }}'; users = env['res.users'].with_context(active_test=False); user = users.search([('login', '=', login)], limit=1) or users.create({'name': login, 'login': login, 'email': login}); user.write({'active': True, 'password': '#!cxtower.secret.EFACTUSV_ODOO_CUSTOMER_PASSWORD!#', 'groups_id': [(4, env.ref('base.group_system').id)]}); env.cr.commit()" | docker compose run -T --rm web odoo shell -d {{ instance_name }} --no-http]]></field>
         <field name="access_level">2</field>
     </record>
     <record id="command_register_dns" model="cx.tower.command">
@@ -300,6 +313,12 @@ result = {"exit_code": 0, "message": "OVH DNS removed for " + hostname}
         <field name="command_id" ref="command_configure_admin" />
         <field name="use_sudo" eval="True" />
     </record>
+    <record id="plan_create_line_57" model="cx.tower.plan.line">
+        <field name="sequence">57</field>
+        <field name="plan_id" ref="plan_create_odoo" />
+        <field name="command_id" ref="command_configure_customer" />
+        <field name="use_sudo" eval="True" />
+    </record>
     <record id="plan_create_line_60" model="cx.tower.plan.line">
         <field name="sequence">60</field>
         <field name="plan_id" ref="plan_create_odoo" />
@@ -443,5 +462,42 @@ result = {"exit_code": 0, "message": "OVH DNS removed for " + hostname}
             ref="cetmix_tower_server.cx_tower_jet_state_destroying"
         />
         <field name="plan_id" ref="plan_destroy_odoo" />
+    </record>
+
+    <record id="command_restart_odoo" model="cx.tower.command">
+        <field name="name">Restart Odoo stack</field>
+        <field name="reference">efactusv_odoo_restart</field>
+        <field name="action">ssh_command</field>
+        <field name="path">{{ base_dir }}/{{ instance_name }}</field>
+        <field name="code">docker compose restart web</field>
+        <field name="access_level">2</field>
+    </record>
+    <record id="plan_restart_odoo" model="cx.tower.plan">
+        <field name="name">Restart efactusv Odoo SaaS instance</field>
+        <field name="reference">efactusv_odoo_restart_plan</field>
+        <field name="access_level">2</field>
+    </record>
+    <record id="plan_restart_line" model="cx.tower.plan.line">
+        <field name="plan_id" ref="plan_restart_odoo" />
+        <field name="command_id" ref="command_restart_odoo" />
+        <field name="use_sudo" eval="True" />
+    </record>
+    <record id="jet_action_restart" model="cx.tower.jet.action">
+        <field name="name">Restart Odoo SaaS</field>
+        <field name="reference">efactusv_odoo_restart_action</field>
+        <field name="jet_template_id" ref="jet_template_odoo_saas" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_restarting"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field name="plan_id" ref="plan_restart_odoo" />
     </record>
 </odoo>

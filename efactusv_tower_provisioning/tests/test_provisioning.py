@@ -3,7 +3,7 @@
 
 from unittest.mock import patch
 
-from odoo.exceptions import AccessError
+from odoo.exceptions import AccessError, ValidationError
 from odoo.tests import TransactionCase, tagged
 
 
@@ -13,7 +13,9 @@ class TestTowerProvisioning(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.env = cls.env(context=dict(cls.env.context, tracking_disable=True))
-        cls.partner = cls.env["res.partner"].create({"name": "POC Customer"})
+        cls.partner = cls.env["res.partner"].create(
+            {"name": "POC Customer", "email": "poc@example.com"}
+        )
         cls.os = cls.env["cx.tower.os"].create({"name": "Provisioning Test OS"})
         cls.server = cls.env["cx.tower.server"].create(
             {
@@ -90,7 +92,50 @@ class TestTowerProvisioning(TransactionCase):
         self.assertEqual(first, second)
         self.assertEqual(len(first), 1)
 
+    def _queued_request(self):
+        return self.env["cx.tower.provisioning.request"].create(
+            {
+                "contract_id": self.contract.id,
+                "source_invoice_id": self.invoice.id,
+                "profile_id": self.profile.id,
+                "state": "queued",
+            }
+        )
+
+    def test_provisioning_auto_verifies_by_default(self):
+        request = self._queued_request()
+        with (
+            patch.object(type(request), "_validate_for_provisioning"),
+            patch.object(type(request), "_on_verified", autospec=True) as verified,
+        ):
+            request._run_provisioning()
+        self.assertTrue(request.jet_id)
+        self.assertEqual(request.state, "verified")
+        verified.assert_called_once()
+
+    def test_in_payment_invoice_counts_as_paid(self):
+        request = self._queued_request()
+        self.invoice.write({"state": "posted", "payment_state": "in_payment"})
+        request._validate_for_provisioning()
+
+    def test_unpaid_invoice_is_rejected(self):
+        request = self._queued_request()
+        with self.assertRaises(ValidationError):
+            request._validate_for_provisioning()
+
+    def test_server_without_capacity_fails_request(self):
+        self.template.limit_per_server = 1
+        self.template.create_jet(self.server, name="existing-customer")
+        request = self._queued_request()
+        self.invoice.write({"state": "posted", "payment_state": "paid"})
+        with patch.object(type(request), "_schedule_review_activity"):
+            request._run_provisioning()
+        self.assertEqual(request.state, "failed")
+        self.assertIn("no capacity", request.last_error)
+        self.assertFalse(request.jet_id)
+
     def test_provisioning_creates_linked_jet_and_review_state(self):
+        self.profile.auto_verify = False
         request = self.env["cx.tower.provisioning.request"].create(
             {
                 "contract_id": self.contract.id,

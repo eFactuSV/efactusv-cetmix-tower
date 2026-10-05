@@ -24,14 +24,7 @@ class CxTowerJet(models.Model):
             if failed:
                 request._mark_failed(_("Tower reported a failed lifecycle transition."))
             elif not jet.target_state_id:
-                request.write(
-                    {
-                        "state": "ready_for_review",
-                        "url": jet.url or request.url,
-                        "last_error": False,
-                    }
-                )
-                request._schedule_review_activity()
+                request._mark_provisioned(url=jet.url or request.url)
         return result
 
 

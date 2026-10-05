@@ -31,6 +31,10 @@
                                 name="admin_password_key_id"
                                 options="{'no_create': True}"
                             />
+                            <field
+                                name="customer_password_key_id"
+                                options="{'no_create': True}"
+                            />
                         </group>
                     </group>
                 </page>

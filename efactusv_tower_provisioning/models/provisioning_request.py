@@ -158,7 +158,29 @@ class TowerProvisioningRequest(models.Model):
             raise UserError(_("Only requests ready for review can be verified."))
         self.write({"state": "verified"})
         self.activity_unlink(["mail.mail_activity_data_todo"])
+        for request in self:
+            request._on_verified()
         return True
+
+    def _mark_provisioned(self, url=None):
+        """Close a successful provisioning: verify it or leave it for review."""
+        self.ensure_one()
+        values = {"last_error": False}
+        if url:
+            values["url"] = url
+        if self.profile_id.auto_verify:
+            values["state"] = "verified"
+            self.write(values)
+            self._on_verified()
+        else:
+            values["state"] = "ready_for_review"
+            self.write(values)
+            self._schedule_review_activity()
+
+    def _on_verified(self):
+        """Hook for delivering the instance (welcome email, portal access)."""
+        self.ensure_one()
+        self.message_post(body=_("Instance verified and ready for the customer."))
 
     def action_open_jet(self):
         self.ensure_one()
@@ -177,7 +199,13 @@ class TowerProvisioningRequest(models.Model):
         if self.contract_id.is_terminated:
             raise ValidationError(_("The contract is terminated."))
         invoice = self.source_invoice_id
-        if not invoice or invoice.state != "posted" or invoice.payment_state != "paid":
+        # in_payment is fully paid too: accounting apps keep it until the bank
+        # statement is reconciled.
+        if (
+            not invoice
+            or invoice.state != "posted"
+            or invoice.payment_state not in ("paid", "in_payment")
+        ):
             raise ValidationError(_("The source invoice is not fully paid."))
         if not self.profile_id.active:
             raise ValidationError(_("The provisioning profile is archived."))
@@ -189,6 +217,21 @@ class TowerProvisioningRequest(models.Model):
             raise ValidationError(_("This request already has an instance."))
         if self.contract_id.tower_jet_ids:
             raise ValidationError(_("This contract already has an instance."))
+        template = self.profile_id.jet_template_id
+        server = self.profile_id.server_id
+        limit = template.limit_per_server
+        if limit > 0 and (
+            len(template.jet_ids.filtered(lambda jet: jet.server_id == server)) >= limit
+        ):
+            raise ValidationError(
+                _(
+                    "Server %(server)s has no capacity left for %(template)s "
+                    "(limit %(limit)s).",
+                    server=server.display_name,
+                    template=template.display_name,
+                    limit=limit,
+                )
+            )
 
     def _run_provisioning(self):
         self.ensure_one()
@@ -219,15 +262,17 @@ class TowerProvisioningRequest(models.Model):
                 self.write(
                     {
                         "jet_id": jet.id,
-                        "state": "provisioning"
-                        if jet.target_state_id
-                        else "ready_for_review",
                         "attempt_count": self.attempt_count + 1,
                         "last_error": False,
                     }
                 )
-                if not jet.target_state_id:
-                    self._schedule_review_activity()
+                # An action without a flight plan finishes inside create_jet and
+                # the jet already closed this request (cx_tower_jet).
+                if self.state == "queued":
+                    if jet.target_state_id:
+                        self.state = "provisioning"
+                    else:
+                        self._mark_provisioned()
         except Exception as error:
             self._mark_failed(str(error))
         return True

@@ -3,7 +3,7 @@
 {
     "name": "efactusv Tower Provisioning",
     "summary": "Provision Tower services after a customer invoice is paid",
-    "version": "18.0.1.0.0",
+    "version": "18.0.1.1.0",
     "category": "Services/Contract",
     "website": "https://tower.cetmix.com",
     "author": "efactusv",

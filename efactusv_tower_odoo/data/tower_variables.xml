@@ -44,4 +44,11 @@
         <field name="name">OVH Zone</field>
         <field name="reference">ovh_zone_name</field>
     </record>
+    <record id="variable_customer_email" model="cx.tower.variable">
+        <field name="name">Customer Email</field>
+        <field name="reference">customer_email</field>
+        <field
+            name="validation_pattern"
+        >^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$</field>
+    </record>
 </odoo>

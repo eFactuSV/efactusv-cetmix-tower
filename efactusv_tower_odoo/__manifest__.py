@@ -3,7 +3,7 @@
 {
     "name": "efactusv Tower Odoo Blueprint",
     "summary": "Docker, Nginx, OVH DNS and TLS blueprint for Odoo SaaS instances",
-    "version": "18.0.1.0.0",
+    "version": "18.0.1.1.0",
     "category": "Services/Contract",
     "website": "https://tower.cetmix.com",
     "author": "efactusv",

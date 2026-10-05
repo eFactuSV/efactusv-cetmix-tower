@@ -1,10 +1,15 @@
 # Copyright 2026 efactusv
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
+import re
 import secrets
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+
+# Same pattern as the customer_email Tower variable. It also keeps the value safe
+# inside the quoted odoo shell command: no quotes, spaces or shell characters.
+CUSTOMER_EMAIL_RE = re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$")
 
 
 class TowerProvisioningProfile(models.Model):
@@ -31,6 +36,13 @@ class TowerProvisioningProfile(models.Model):
         required=True,
         default=lambda self: self.env.ref(
             "efactusv_tower_odoo.key_odoo_admin_password", raise_if_not_found=False
+        ),
+    )
+    customer_password_key_id = fields.Many2one(
+        "cx.tower.key",
+        required=True,
+        default=lambda self: self.env.ref(
+            "efactusv_tower_odoo.key_odoo_customer_password", raise_if_not_found=False
         ),
     )
 
@@ -132,6 +144,7 @@ class TowerProvisioningProfile(models.Model):
         http_port, gevent_port = self._allocate_ports(request)
         self._ensure_secret(self.db_password_key_id, request)
         self._ensure_secret(self.admin_password_key_id, request)
+        self._ensure_secret(self.customer_password_key_id, request)
         values.update(
             {
                 "odoo_image": self.odoo_image,
@@ -142,6 +155,29 @@ class TowerProvisioningProfile(models.Model):
                 "admin_email": self.admin_email,
                 "initial_modules": self.initial_modules,
                 "ovh_zone_name": self.ovh_zone_name,
+                "customer_email": self._customer_email(request),
             }
         )
         return values
+
+    @staticmethod
+    def _customer_email(request):
+        email = (request.partner_id.email or "").strip().lower()
+        if not CUSTOMER_EMAIL_RE.match(email):
+            raise ValidationError(
+                _(
+                    "Customer %(partner)s needs a valid email to receive the "
+                    "instance login.",
+                    partner=request.partner_id.display_name,
+                )
+            )
+        return email
+
+    def _customer_password(self, request):
+        """Initial password of the customer user, read from the Tower vault."""
+        self.ensure_one()
+        value = self.customer_password_key_id.sudo().value_ids.filtered(
+            lambda value: value.server_id == self.server_id
+            and value.partner_id == request.partner_id
+        )[:1]
+        return value._get_secret_value("secret_value") if value else False
