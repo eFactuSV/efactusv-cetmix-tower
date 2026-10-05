@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- Files rendered independently for each Jet. -->
+    <record id="file_template_docker_compose" model="cx.tower.file.template">
+        <field name="name">efactusv Odoo Docker Compose</field>
+        <field name="reference">efactusv_odoo_compose</field>
+        <field name="file_name">docker-compose.yml</field>
+        <field name="server_dir">{{ base_dir }}/{{ instance_name }}</field>
+        <field
+            name="code"
+        ><![CDATA[services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: "#!cxtower.secret.EFACTUSV_ODOO_DB_PASSWORD!#"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+  web:
+    image: "{{ odoo_image }}"
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "127.0.0.1:{{ odoo_http_port }}:8069"
+      - "127.0.0.1:{{ odoo_gevent_port }}:8072"
+    volumes:
+      - odoo-data:/var/lib/odoo
+      - ./odoo.conf:/etc/odoo/odoo.conf:ro
+volumes:
+  db-data:
+  odoo-data:
+]]></field>
+    </record>
+    <record id="file_template_odoo_conf" model="cx.tower.file.template">
+        <field name="name">efactusv Odoo Configuration</field>
+        <field name="reference">efactusv_odoo_conf</field>
+        <field name="file_name">odoo.conf</field>
+        <field name="server_dir">{{ base_dir }}/{{ instance_name }}</field>
+        <field
+            name="code"
+        ><![CDATA[[options]
+admin_passwd = #!cxtower.secret.EFACTUSV_ODOO_ADMIN_PASSWORD!#
+db_host = db
+db_port = 5432
+db_user = odoo
+db_password = #!cxtower.secret.EFACTUSV_ODOO_DB_PASSWORD!#
+dbfilter = ^{{ instance_name }}$
+list_db = False
+proxy_mode = True
+workers = {{ odoo_workers }}
+gevent_port = 8072
+data_dir = /var/lib/odoo
+]]></field>
+    </record>
+    <record id="file_template_nginx" model="cx.tower.file.template">
+        <field name="name">efactusv Odoo Nginx Virtual Host</field>
+        <field name="reference">efactusv_odoo_nginx</field>
+        <field name="file_name">{{ instance_name }}.conf</field>
+        <field name="server_dir">/etc/nginx/sites-available</field>
+        <field
+            name="code"
+        ><![CDATA[server {
+    listen 80;
+    server_name {{ instance_domain }};
+    client_max_body_size 128m;
+    proxy_read_timeout 720s;
+    proxy_send_timeout 720s;
+    location /websocket {
+        proxy_pass http://127.0.0.1:{{ odoo_gevent_port }};
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+    location / {
+        proxy_pass http://127.0.0.1:{{ odoo_http_port }};
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+]]></field>
+    </record>
+
+    <!-- Commands are deliberately idempotent so a failed plan can be retried. -->
+    <record id="command_ensure_runtime" model="cx.tower.command">
+        <field name="name">Ensure Odoo host runtime</field>
+        <field name="reference">efactusv_odoo_runtime</field>
+        <field name="action">ssh_command</field>
+        <field
+            name="code"
+        ><![CDATA[apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y docker.io docker-compose-plugin nginx certbot python3-certbot-nginx curl dnsutils && systemctl enable --now docker nginx]]></field>
+        <field name="access_level">2</field>
+    </record>
+    <record id="command_prepare_directory" model="cx.tower.command">
+        <field name="name">Prepare Odoo instance directory</field>
+        <field name="reference">efactusv_odoo_prepare</field>
+        <field name="action">ssh_command</field>
+        <field name="code">mkdir -p {{ base_dir }}/{{ instance_name }}</field>
+        <field name="access_level">2</field>
+    </record>
+    <record id="command_push_compose" model="cx.tower.command">
+        <field name="name">Write Odoo Docker Compose</field>
+        <field name="reference">efactusv_odoo_push_compose</field>
+        <field name="action">file_using_template</field>
+        <field name="file_template_id" ref="file_template_docker_compose" />
+        <field name="if_file_exists">overwrite</field>
+        <field name="access_level">2</field>
+    </record>
+    <record id="command_push_odoo_conf" model="cx.tower.command">
+        <field name="name">Write Odoo configuration</field>
+        <field name="reference">efactusv_odoo_push_conf</field>
+        <field name="action">file_using_template</field>
+        <field name="file_template_id" ref="file_template_odoo_conf" />
+        <field name="if_file_exists">overwrite</field>
+        <field name="access_level">2</field>
+    </record>
+    <record id="command_start_database" model="cx.tower.command">
+        <field name="name">Start Odoo database</field>
+        <field name="reference">efactusv_odoo_start_db</field>
+        <field name="action">ssh_command</field>
+        <field name="path">{{ base_dir }}/{{ instance_name }}</field>
+        <field name="code">docker compose up -d db</field>
+        <field name="access_level">2</field>
+    </record>
+    <record id="command_initialize_database" model="cx.tower.command">
+        <field name="name">Initialize Odoo database</field>
+        <field name="reference">efactusv_odoo_init_db</field>
+        <field name="action">ssh_command</field>
+        <field name="path">{{ base_dir }}/{{ instance_name }}</field>
+        <field
+            name="code"
+        ><![CDATA[docker compose run --rm web odoo -d {{ instance_name }} -i {{ initial_modules }} --stop-after-init --without-demo=all --db_host=db --db_port=5432 --db_user=odoo --db_password='#!cxtower.secret.EFACTUSV_ODOO_DB_PASSWORD!#' --admin-passwd='#!cxtower.secret.EFACTUSV_ODOO_ADMIN_PASSWORD!#']]></field>
+        <field name="access_level">2</field>
+    </record>
+    <record id="command_start_odoo" model="cx.tower.command">
+        <field name="name">Start Odoo stack</field>
+        <field name="reference">efactusv_odoo_start</field>
+        <field name="action">ssh_command</field>
+        <field name="path">{{ base_dir }}/{{ instance_name }}</field>
+        <field name="code">docker compose up -d</field>
+        <field name="access_level">2</field>
+    </record>
+    <record id="command_configure_admin" model="cx.tower.command">
+        <field name="name">Configure Odoo administrator</field>
+        <field name="reference">efactusv_odoo_configure_admin</field>
+        <field name="action">ssh_command</field>
+        <field name="path">{{ base_dir }}/{{ instance_name }}</field>
+        <field
+            name="code"
+        ><![CDATA[printf '%s\n' "admin = env.ref('base.user_admin'); admin.write({'login': '{{ admin_email }}', 'email': '{{ admin_email }}', 'password': '#!cxtower.secret.EFACTUSV_ODOO_ADMIN_PASSWORD!#'})" | docker compose run -T --rm web odoo shell -d {{ instance_name }} --no-http]]></field>
+        <field name="access_level">2</field>
+    </record>
+    <record id="command_register_dns" model="cx.tower.command">
+        <field name="name">Register Odoo OVH DNS</field>
+        <field name="reference">efactusv_odoo_register_dns</field>
+        <field name="action">python_code</field>
+        <field
+            name="code"
+        ><![CDATA[client = ovh.Client(
+    endpoint="ovh-eu",
+    application_key=#!cxtower.secret.OVH_APPLICATION_KEY!#,
+    application_secret=#!cxtower.secret.OVH_APPLICATION_SECRET!#,
+    consumer_key=#!cxtower.secret.OVH_CONSUMER_KEY!#,
+)
+zone = {{ ovh_zone_name }}
+hostname = {{ instance_domain }}
+subdomain = hostname[:-(len(zone) + 1)]
+path = "/domain/zone/" + zone + "/record"
+records = client.get(path, subDomain=subdomain, fieldType="A")
+if not records:
+    client.post(path, fieldType="A", subDomain=subdomain, target={{ tower.server.ipv4 }}, ttl=300)
+    client.post("/domain/zone/" + zone + "/refresh")
+else:
+    record_path = path + "/" + str(records[0])
+    record = client.get(record_path)
+    if record.get("target") != {{ tower.server.ipv4 }}:
+        client.put(record_path, target={{ tower.server.ipv4 }}, subDomain=subdomain, ttl=300)
+        client.post("/domain/zone/" + zone + "/refresh")
+result = {"exit_code": 0, "message": "OVH DNS ready for " + hostname}
+]]></field>
+        <field name="access_level">2</field>
+    </record>
+    <record id="command_push_nginx" model="cx.tower.command">
+        <field name="name">Write Odoo Nginx virtual host</field>
+        <field name="reference">efactusv_odoo_push_nginx</field>
+        <field name="action">file_using_template</field>
+        <field name="file_template_id" ref="file_template_nginx" />
+        <field name="if_file_exists">overwrite</field>
+        <field name="access_level">2</field>
+    </record>
+    <record id="command_enable_tls" model="cx.tower.command">
+        <field name="name">Enable Nginx and Let's Encrypt</field>
+        <field name="reference">efactusv_odoo_tls</field>
+        <field name="action">ssh_command</field>
+        <field
+            name="code"
+        ><![CDATA[for attempt in $(seq 1 30); do [ "$(dig +short A {{ instance_domain }} @1.1.1.1 | tail -1)" = "{{ tower.server.ipv4 }}" ] && break; sleep 10; done && [ "$(dig +short A {{ instance_domain }} @1.1.1.1 | tail -1)" = "{{ tower.server.ipv4 }}" ] && ln -sfn /etc/nginx/sites-available/{{ instance_name }}.conf /etc/nginx/sites-enabled/{{ instance_name }}.conf && nginx -t && systemctl reload nginx && certbot --nginx --non-interactive --agree-tos --redirect -m {{ admin_email }} -d {{ instance_domain }}]]></field>
+        <field name="access_level">2</field>
+    </record>
+    <record id="command_healthcheck" model="cx.tower.command">
+        <field name="name">Validate Odoo HTTPS health</field>
+        <field name="reference">efactusv_odoo_health</field>
+        <field name="action">ssh_command</field>
+        <field
+            name="code"
+        ><![CDATA[curl --fail --silent --show-error --retry 12 --retry-delay 5 https://{{ instance_domain }}/web/login >/dev/null]]></field>
+        <field name="access_level">2</field>
+    </record>
+    <record id="command_stop_odoo" model="cx.tower.command">
+        <field name="name">Stop Odoo stack</field>
+        <field name="reference">efactusv_odoo_stop</field>
+        <field name="action">ssh_command</field>
+        <field name="path">{{ base_dir }}/{{ instance_name }}</field>
+        <field name="code">docker compose stop</field>
+        <field name="access_level">2</field>
+    </record>
+    <record id="command_destroy_odoo" model="cx.tower.command">
+        <field name="name">Destroy Odoo stack</field>
+        <field name="reference">efactusv_odoo_destroy</field>
+        <field name="action">ssh_command</field>
+        <field name="path">{{ base_dir }}/{{ instance_name }}</field>
+        <field
+            name="code"
+        ><![CDATA[docker compose down --volumes --remove-orphans && cd / && rm -rf -- '{{ base_dir }}/{{ instance_name }}' && rm -f -- '/etc/nginx/sites-enabled/{{ instance_name }}.conf' '/etc/nginx/sites-available/{{ instance_name }}.conf' && nginx -t && systemctl reload nginx]]></field>
+        <field name="access_level">2</field>
+    </record>
+    <record id="command_unregister_dns" model="cx.tower.command">
+        <field name="name">Remove Odoo OVH DNS</field>
+        <field name="reference">efactusv_odoo_unregister_dns</field>
+        <field name="action">python_code</field>
+        <field
+            name="code"
+        ><![CDATA[client = ovh.Client(
+    endpoint="ovh-eu",
+    application_key=#!cxtower.secret.OVH_APPLICATION_KEY!#,
+    application_secret=#!cxtower.secret.OVH_APPLICATION_SECRET!#,
+    consumer_key=#!cxtower.secret.OVH_CONSUMER_KEY!#,
+)
+zone = {{ ovh_zone_name }}
+hostname = {{ instance_domain }}
+subdomain = hostname[:-(len(zone) + 1)]
+path = "/domain/zone/" + zone + "/record"
+for record_id in client.get(path, subDomain=subdomain, fieldType="A"):
+    client.delete(path + "/" + str(record_id))
+client.post("/domain/zone/" + zone + "/refresh")
+result = {"exit_code": 0, "message": "OVH DNS removed for " + hostname}
+]]></field>
+        <field name="access_level">2</field>
+    </record>
+
+    <record id="plan_create_odoo" model="cx.tower.plan">
+        <field name="name">Create efactusv Odoo SaaS instance</field>
+        <field name="reference">efactusv_odoo_create_plan</field>
+        <field name="access_level">2</field>
+    </record>
+    <record id="plan_create_line_5" model="cx.tower.plan.line">
+        <field name="sequence">5</field>
+        <field name="plan_id" ref="plan_create_odoo" />
+        <field name="command_id" ref="command_ensure_runtime" />
+        <field name="use_sudo" eval="True" />
+    </record>
+    <record id="plan_create_line_10" model="cx.tower.plan.line">
+        <field name="sequence">10</field>
+        <field name="plan_id" ref="plan_create_odoo" />
+        <field name="command_id" ref="command_prepare_directory" />
+        <field name="use_sudo" eval="True" />
+    </record>
+    <record id="plan_create_line_20" model="cx.tower.plan.line">
+        <field name="sequence">20</field>
+        <field name="plan_id" ref="plan_create_odoo" />
+        <field name="command_id" ref="command_push_compose" />
+        <field name="use_sudo" eval="True" />
+    </record>
+    <record id="plan_create_line_30" model="cx.tower.plan.line">
+        <field name="sequence">30</field>
+        <field name="plan_id" ref="plan_create_odoo" />
+        <field name="command_id" ref="command_push_odoo_conf" />
+        <field name="use_sudo" eval="True" />
+    </record>
+    <record id="plan_create_line_40" model="cx.tower.plan.line">
+        <field name="sequence">40</field>
+        <field name="plan_id" ref="plan_create_odoo" />
+        <field name="command_id" ref="command_start_database" />
+        <field name="use_sudo" eval="True" />
+    </record>
+    <record id="plan_create_line_50" model="cx.tower.plan.line">
+        <field name="sequence">50</field>
+        <field name="plan_id" ref="plan_create_odoo" />
+        <field name="command_id" ref="command_initialize_database" />
+        <field name="use_sudo" eval="True" />
+    </record>
+    <record id="plan_create_line_55" model="cx.tower.plan.line">
+        <field name="sequence">55</field>
+        <field name="plan_id" ref="plan_create_odoo" />
+        <field name="command_id" ref="command_configure_admin" />
+        <field name="use_sudo" eval="True" />
+    </record>
+    <record id="plan_create_line_60" model="cx.tower.plan.line">
+        <field name="sequence">60</field>
+        <field name="plan_id" ref="plan_create_odoo" />
+        <field name="command_id" ref="command_start_odoo" />
+        <field name="use_sudo" eval="True" />
+    </record>
+    <record id="plan_create_line_70" model="cx.tower.plan.line">
+        <field name="sequence">70</field>
+        <field name="plan_id" ref="plan_create_odoo" />
+        <field name="command_id" ref="command_register_dns" />
+    </record>
+    <record id="plan_create_line_80" model="cx.tower.plan.line">
+        <field name="sequence">80</field>
+        <field name="plan_id" ref="plan_create_odoo" />
+        <field name="command_id" ref="command_push_nginx" />
+        <field name="use_sudo" eval="True" />
+    </record>
+    <record id="plan_create_line_90" model="cx.tower.plan.line">
+        <field name="sequence">90</field>
+        <field name="plan_id" ref="plan_create_odoo" />
+        <field name="command_id" ref="command_enable_tls" />
+        <field name="use_sudo" eval="True" />
+    </record>
+    <record id="plan_create_line_100" model="cx.tower.plan.line">
+        <field name="sequence">100</field>
+        <field name="plan_id" ref="plan_create_odoo" />
+        <field name="command_id" ref="command_healthcheck" />
+    </record>
+
+    <record id="plan_start_odoo" model="cx.tower.plan">
+        <field name="name">Start efactusv Odoo SaaS instance</field>
+        <field name="reference">efactusv_odoo_start_plan</field>
+        <field name="access_level">2</field>
+    </record>
+    <record id="plan_start_line" model="cx.tower.plan.line">
+        <field name="plan_id" ref="plan_start_odoo" />
+        <field name="command_id" ref="command_start_odoo" />
+        <field name="use_sudo" eval="True" />
+    </record>
+    <record id="plan_stop_odoo" model="cx.tower.plan">
+        <field name="name">Stop efactusv Odoo SaaS instance</field>
+        <field name="reference">efactusv_odoo_stop_plan</field>
+        <field name="access_level">2</field>
+    </record>
+    <record id="plan_stop_line" model="cx.tower.plan.line">
+        <field name="plan_id" ref="plan_stop_odoo" />
+        <field name="command_id" ref="command_stop_odoo" />
+        <field name="use_sudo" eval="True" />
+    </record>
+    <record id="plan_destroy_odoo" model="cx.tower.plan">
+        <field name="name">Destroy efactusv Odoo SaaS instance</field>
+        <field name="reference">efactusv_odoo_destroy_plan</field>
+        <field name="access_level">2</field>
+    </record>
+    <record id="plan_destroy_line_10" model="cx.tower.plan.line">
+        <field name="sequence">10</field>
+        <field name="plan_id" ref="plan_destroy_odoo" />
+        <field name="command_id" ref="command_destroy_odoo" />
+        <field name="use_sudo" eval="True" />
+    </record>
+    <record id="plan_destroy_line_20" model="cx.tower.plan.line">
+        <field name="sequence">20</field>
+        <field name="plan_id" ref="plan_destroy_odoo" />
+        <field name="command_id" ref="command_unregister_dns" />
+    </record>
+
+    <record id="jet_template_odoo_saas" model="cx.tower.jet.template">
+        <field name="name">efactusv Odoo 18 SaaS</field>
+        <field name="reference">efactusv_odoo_18_saas</field>
+        <field name="show_in_create_wizard" eval="True" />
+        <field
+            name="state_on_contract_terminate_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopped"
+        />
+        <field
+            name="state_on_contract_reactivate_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+    </record>
+    <record id="jet_action_create" model="cx.tower.jet.action">
+        <field name="name">Create Odoo SaaS</field>
+        <field name="reference">efactusv_odoo_create</field>
+        <field name="jet_template_id" ref="jet_template_odoo_saas" />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_starting"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field name="plan_id" ref="plan_create_odoo" />
+        <field name="priority">1</field>
+    </record>
+    <record id="jet_action_stop" model="cx.tower.jet.action">
+        <field name="name">Stop Odoo SaaS</field>
+        <field name="reference">efactusv_odoo_stop_action</field>
+        <field name="jet_template_id" ref="jet_template_odoo_saas" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopping"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopped"
+        />
+        <field name="plan_id" ref="plan_stop_odoo" />
+    </record>
+    <record id="jet_action_start" model="cx.tower.jet.action">
+        <field name="name">Start Odoo SaaS</field>
+        <field name="reference">efactusv_odoo_start_action</field>
+        <field name="jet_template_id" ref="jet_template_odoo_saas" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopped"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_starting"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field name="plan_id" ref="plan_start_odoo" />
+    </record>
+    <record id="jet_action_destroy" model="cx.tower.jet.action">
+        <field name="name">Destroy Odoo SaaS</field>
+        <field name="reference">efactusv_odoo_destroy_action</field>
+        <field name="jet_template_id" ref="jet_template_odoo_saas" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopped"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_destroying"
+        />
+        <field name="plan_id" ref="plan_destroy_odoo" />
+    </record>
+</odoo>

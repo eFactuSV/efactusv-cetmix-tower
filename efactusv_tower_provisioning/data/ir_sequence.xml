@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="sequence_tower_provisioning_request" model="ir.sequence">
+        <field name="name">Tower Provisioning Request</field>
+        <field name="code">cx.tower.provisioning.request</field>
+        <field name="prefix">PROV/</field>
+        <field name="padding">6</field>
+        <field name="company_id" eval="False" />
+    </record>
+</odoo>

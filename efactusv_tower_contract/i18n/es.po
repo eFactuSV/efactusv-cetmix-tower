@@ -1,0 +1,152 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-06 05:15+0000\n"
+"PO-Revision-Date: 2026-08-06 05:15+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: efactusv_tower_contract
+#. odoo-python
+#: code:addons/efactusv_tower_contract/models/contract_contract.py:0
+msgid "Cannot create an instance for a terminated contract."
+msgstr "No se puede crear una instancia para un contrato terminado."
+
+#. module: efactusv_tower_contract
+#: model:ir.model,name:efactusv_tower_contract.model_cx_tower_jet
+msgid "Cetmix Tower Jet"
+msgstr "Jet de Cetmix Tower"
+
+#. module: efactusv_tower_contract
+#: model:ir.model,name:efactusv_tower_contract.model_cx_tower_jet_template
+msgid "Cetmix Tower Jet Template"
+msgstr "Plantilla de Jet de Cetmix Tower"
+
+#. module: efactusv_tower_contract
+#: model:ir.model,name:efactusv_tower_contract.model_contract_contract
+#: model:ir.model.fields,field_description:efactusv_tower_contract.field_cx_tower_jet__contract_id
+#: model_terms:ir.ui.view,arch_db:efactusv_tower_contract.cx_tower_jet_view_form
+msgid "Contract"
+msgstr "Contrato"
+
+#. module: efactusv_tower_contract
+#: model_terms:ir.ui.view,arch_db:efactusv_tower_contract.contract_contract_form_view
+msgid "Create Instance"
+msgstr "Crear Instancia"
+
+#. module: efactusv_tower_contract
+#: model:ir.model.fields,help:efactusv_tower_contract.field_cx_tower_jet__contract_id
+msgid "Customer contract this instance is billed with"
+msgstr "Contrato del cliente con el que se factura esta instancia"
+
+#. module: efactusv_tower_contract
+#. odoo-python
+#: code:addons/efactusv_tower_contract/models/contract_contract.py:0
+msgid ""
+"Failed to bring instance %(jet)s to state %(state)s. Check the instance logs"
+" in Cetmix Tower."
+msgstr ""
+"No se pudo llevar la instancia %(jet)s al estado %(state)s. Revise los "
+"registros de la instancia en Cetmix Tower."
+
+#. module: efactusv_tower_contract
+#. odoo-python
+#: code:addons/efactusv_tower_contract/models/contract_contract.py:0
+msgid ""
+"Failed to create the instance. Check the jet limit on the server and the "
+"template settings."
+msgstr ""
+"No se pudo crear la instancia. Revise el límite de jets del servidor y la "
+"configuración de la plantilla."
+
+#. module: efactusv_tower_contract
+#: model:ir.model.fields,field_description:efactusv_tower_contract.field_contract_contract__tower_server_id
+msgid "Instance Server"
+msgstr "Servidor de la Instancia"
+
+#. module: efactusv_tower_contract
+#: model:ir.model.fields,field_description:efactusv_tower_contract.field_contract_contract__tower_jet_template_id
+msgid "Instance Template"
+msgstr "Plantilla de la Instancia"
+
+#. module: efactusv_tower_contract
+#. odoo-python
+#: code:addons/efactusv_tower_contract/models/contract_contract.py:0
+#: model:ir.model.fields,field_description:efactusv_tower_contract.field_contract_contract__tower_jet_count
+#: model_terms:ir.ui.view,arch_db:efactusv_tower_contract.contract_contract_form_view
+msgid "Instances"
+msgstr "Instancias"
+
+#. module: efactusv_tower_contract
+#: model:ir.model.fields,help:efactusv_tower_contract.field_contract_contract__tower_jet_template_id
+msgid "Jet template used to create new instances for this contract"
+msgstr ""
+"Plantilla de jet usada para crear nuevas instancias para este contrato"
+
+#. module: efactusv_tower_contract
+#: model:ir.model.fields,help:efactusv_tower_contract.field_cx_tower_jet_template__state_on_contract_terminate_id
+msgid ""
+"Jets linked to a contract are brought to this state when the contract is "
+"terminated. Leave empty to keep the jet running."
+msgstr ""
+"Los jets vinculados a un contrato se llevan a este estado cuando el contrato"
+" se termina. Deje vacío para mantener el jet en ejecución."
+
+#. module: efactusv_tower_contract
+#: model:ir.model.fields,help:efactusv_tower_contract.field_cx_tower_jet_template__state_on_contract_reactivate_id
+msgid ""
+"Jets linked to a contract are brought to this state when the contract "
+"termination is cancelled. Leave empty to keep the jet in its current state."
+msgstr ""
+"Los jets vinculados a un contrato se llevan a este estado cuando se cancela "
+"la terminación del contrato. Deje vacío para mantener el jet en su estado "
+"actual."
+
+#. module: efactusv_tower_contract
+#. odoo-python
+#: code:addons/efactusv_tower_contract/models/contract_contract.py:0
+msgid ""
+"Please configure both the instance template and the instance server on the "
+"contract first."
+msgstr ""
+"Primero configure la plantilla de la instancia y el servidor de la instancia"
+" en el contrato."
+
+#. module: efactusv_tower_contract
+#: model_terms:ir.ui.view,arch_db:efactusv_tower_contract.contract_contract_form_view
+msgid "SaaS Instances"
+msgstr "Instancias SaaS"
+
+#. module: efactusv_tower_contract
+#: model:ir.model.fields,help:efactusv_tower_contract.field_contract_contract__tower_server_id
+msgid "Server where new instances for this contract are created"
+msgstr "Servidor donde se crean las nuevas instancias para este contrato"
+
+#. module: efactusv_tower_contract
+#: model:ir.model.fields,field_description:efactusv_tower_contract.field_cx_tower_jet_template__state_on_contract_reactivate_id
+msgid "State on Contract Reactivation"
+msgstr "Estado al Reactivar el Contrato"
+
+#. module: efactusv_tower_contract
+#: model:ir.model.fields,field_description:efactusv_tower_contract.field_cx_tower_jet_template__state_on_contract_terminate_id
+msgid "State on Contract Termination"
+msgstr "Estado al Terminar el Contrato"
+
+#. module: efactusv_tower_contract
+#: model:ir.model.fields,field_description:efactusv_tower_contract.field_contract_contract__tower_jet_ids
+msgid "Tower Instances"
+msgstr "Instancias de Tower"
+
+#. module: efactusv_tower_contract
+#. odoo-python
+#: code:addons/efactusv_tower_contract/models/contract_contract.py:0
+msgid "Tower instance %(jet)s created on server %(server)s."
+msgstr "Instancia de Tower %(jet)s creada en el servidor %(server)s."
+

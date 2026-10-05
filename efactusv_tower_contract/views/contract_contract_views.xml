@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 efactusv
+     License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="contract_contract_form_view" model="ir.ui.view">
+        <field name="name">contract.contract.form.tower</field>
+        <field name="model">contract.contract</field>
+        <field name="inherit_id" ref="contract.contract_contract_form_view" />
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button
+                    name="action_view_tower_jets"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-rocket"
+                    invisible="tower_jet_count == 0"
+                >
+                    <field
+                        name="tower_jet_count"
+                        widget="statinfo"
+                        string="Instances"
+                    />
+                </button>
+            </div>
+            <xpath expr="//page[@name='info']//group[1]" position="after">
+                <group string="SaaS Instances" name="tower_instances">
+                    <field name="tower_jet_template_id" options="{'no_create': True}" />
+                    <field name="tower_server_id" options="{'no_create': True}" />
+                    <button
+                        name="action_create_tower_jet"
+                        type="object"
+                        string="Create Instance"
+                        class="btn-primary"
+                        icon="fa-rocket"
+                        invisible="is_terminated"
+                        groups="cetmix_tower_server.group_manager"
+                        colspan="2"
+                    />
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

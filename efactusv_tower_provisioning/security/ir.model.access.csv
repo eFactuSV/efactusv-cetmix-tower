@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_tower_provisioning_profile_user,tower.provisioning.profile user,model_cx_tower_provisioning_profile,base.group_user,1,0,0,0
+access_tower_provisioning_profile_manager,tower.provisioning.profile manager,model_cx_tower_provisioning_profile,cetmix_tower_server.group_manager,1,1,1,1
+access_tower_provisioning_profile_variable_user,tower.provisioning.profile.variable user,model_cx_tower_provisioning_profile_variable,base.group_user,1,0,0,0
+access_tower_provisioning_profile_variable_manager,tower.provisioning.profile.variable manager,model_cx_tower_provisioning_profile_variable,cetmix_tower_server.group_manager,1,1,1,1
+access_tower_provisioning_request_user,tower.provisioning.request user,model_cx_tower_provisioning_request,base.group_user,1,0,0,0
+access_tower_provisioning_request_manager,tower.provisioning.request manager,model_cx_tower_provisioning_request,cetmix_tower_server.group_manager,1,1,1,0

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="profile_form_odoo_blueprint" model="ir.ui.view">
+        <field name="name">cx.tower.provisioning.profile.form.odoo</field>
+        <field name="model">cx.tower.provisioning.profile</field>
+        <field
+            name="inherit_id"
+            ref="efactusv_tower_provisioning.view_tower_provisioning_profile_form"
+        />
+        <field name="arch" type="xml">
+            <page name="variables" position="after">
+                <page string="Odoo" name="odoo">
+                    <group>
+                        <group>
+                            <field name="odoo_image" />
+                            <field name="odoo_workers" />
+                            <field name="initial_modules" />
+                            <field name="admin_email" />
+                            <field name="base_dir" />
+                        </group>
+                        <group>
+                            <field name="http_port_start" />
+                            <field name="port_step" />
+                            <field name="gevent_port_offset" />
+                            <field name="ovh_zone_name" />
+                            <field
+                                name="db_password_key_id"
+                                options="{'no_create': True}"
+                            />
+                            <field
+                                name="admin_password_key_id"
+                                options="{'no_create': True}"
+                            />
+                        </group>
+                    </group>
+                </page>
+            </page>
+        </field>
+    </record>
+</odoo>

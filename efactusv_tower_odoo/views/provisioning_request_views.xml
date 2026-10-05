@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="request_form_odoo_blueprint" model="ir.ui.view">
+        <field name="name">cx.tower.provisioning.request.form.odoo</field>
+        <field name="model">cx.tower.provisioning.request</field>
+        <field
+            name="inherit_id"
+            ref="efactusv_tower_provisioning.view_tower_provisioning_request_form"
+        />
+        <field name="arch" type="xml">
+            <field name="attempt_count" position="after">
+                <field name="odoo_http_port" />
+                <field name="odoo_gevent_port" />
+            </field>
+        </field>
+    </record>
+</odoo>

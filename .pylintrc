@@ -9,7 +9,7 @@ deprecated-modules=pdb,pudb,ipdb,bs4
 
 [ODOOLINT]
 readme-template-url="https://github.com/cetmix/maintainer-tools/blob/master/template/module/README.rst"
-manifest-required-authors=Cetmix
+manifest-required-authors=Cetmix,efactusv
 manifest-required-keys=license
 manifest-deprecated-keys=description,active
 license-allowed=OPL-1,AGPL-3,GPL-2,GPL-2 or any later version,GPL-3,GPL-3 or any later version,LGPL-3

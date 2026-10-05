@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="rule_tower_provisioning_profile_company" model="ir.rule">
+        <field name="name">Tower provisioning profiles by company</field>
+        <field name="model_id" ref="model_cx_tower_provisioning_profile" />
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_tower_provisioning_profile_variable_company" model="ir.rule">
+        <field name="name">Tower provisioning profile variables by company</field>
+        <field name="model_id" ref="model_cx_tower_provisioning_profile_variable" />
+        <field
+            name="domain_force"
+        >[('profile_id.company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_tower_provisioning_request_company" model="ir.rule">
+        <field name="name">Tower provisioning requests by company</field>
+        <field name="model_id" ref="model_cx_tower_provisioning_request" />
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

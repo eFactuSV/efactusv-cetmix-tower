@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="variable_instance_name" model="cx.tower.variable">
+        <field name="name">Instance Name</field>
+        <field name="reference">instance_name</field>
+        <field name="validation_pattern">^[a-z0-9][a-z0-9-]+$</field>
+    </record>
+    <record id="variable_instance_domain" model="cx.tower.variable">
+        <field name="name">Instance Domain</field>
+        <field name="reference">instance_domain</field>
+    </record>
+    <record id="variable_odoo_image" model="cx.tower.variable">
+        <field name="name">Odoo Image</field>
+        <field name="reference">odoo_image</field>
+    </record>
+    <record id="variable_odoo_http_port" model="cx.tower.variable">
+        <field name="name">Odoo HTTP Port</field>
+        <field name="reference">odoo_http_port</field>
+        <field name="validation_pattern">^[0-9]+$</field>
+    </record>
+    <record id="variable_odoo_gevent_port" model="cx.tower.variable">
+        <field name="name">Odoo Gevent Port</field>
+        <field name="reference">odoo_gevent_port</field>
+        <field name="validation_pattern">^[0-9]+$</field>
+    </record>
+    <record id="variable_odoo_workers" model="cx.tower.variable">
+        <field name="name">Odoo Workers</field>
+        <field name="reference">odoo_workers</field>
+        <field name="validation_pattern">^[1-9][0-9]*$</field>
+    </record>
+    <record id="variable_base_dir" model="cx.tower.variable">
+        <field name="name">Base Directory</field>
+        <field name="reference">base_dir</field>
+    </record>
+    <record id="variable_admin_email" model="cx.tower.variable">
+        <field name="name">Administrator Email</field>
+        <field name="reference">admin_email</field>
+    </record>
+    <record id="variable_initial_modules" model="cx.tower.variable">
+        <field name="name">Initial Modules</field>
+        <field name="reference">initial_modules</field>
+    </record>
+    <record id="variable_ovh_zone_name" model="cx.tower.variable">
+        <field name="name">OVH Zone</field>
+        <field name="reference">ovh_zone_name</field>
+    </record>
+</odoo>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="jet_form_tower_provisioning" model="ir.ui.view">
+        <field name="name">cx.tower.jet.form.tower.provisioning</field>
+        <field name="model">cx.tower.jet</field>
+        <field name="inherit_id" ref="efactusv_tower_contract.cx_tower_jet_view_form" />
+        <field name="arch" type="xml">
+            <field name="contract_id" position="after">
+                <field name="provisioning_request_id" readonly="1" />
+            </field>
+        </field>
+    </record>
+</odoo>

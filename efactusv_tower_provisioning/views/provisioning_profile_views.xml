@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_tower_provisioning_profile_list" model="ir.ui.view">
+        <field name="name">cx.tower.provisioning.profile.list</field>
+        <field name="model">cx.tower.provisioning.profile</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name" />
+                <field name="company_id" groups="base.group_multi_company" />
+                <field name="jet_template_id" />
+                <field name="server_id" />
+                <field name="base_domain" />
+                <field name="active" />
+            </list>
+        </field>
+    </record>
+    <record id="view_tower_provisioning_profile_form" model="ir.ui.view">
+        <field name="name">cx.tower.provisioning.profile.form</field>
+        <field name="model">cx.tower.provisioning.profile</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget
+                        name="web_ribbon"
+                        text="Archived"
+                        bg_color="text-bg-danger"
+                        invisible="active"
+                    />
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="active" invisible="1" />
+                            <field
+                                name="company_id"
+                                groups="base.group_multi_company"
+                            />
+                            <field
+                                name="jet_template_id"
+                                options="{'no_create': True}"
+                            />
+                            <field name="server_id" options="{'no_create': True}" />
+                        </group>
+                        <group>
+                            <field name="base_domain" placeholder="efactusv.com" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Variables" name="variables">
+                            <field name="variable_value_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle" />
+                                    <field
+                                        name="variable_id"
+                                        options="{'no_create': True}"
+                                    />
+                                    <field name="value_char" />
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter />
+            </form>
+        </field>
+    </record>
+    <record id="action_tower_provisioning_profile" model="ir.actions.act_window">
+        <field name="name">Provisioning Profiles</field>
+        <field name="res_model">cx.tower.provisioning.profile</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    <menuitem
+        id="menu_tower_provisioning_profile"
+        name="Provisioning Profiles"
+        parent="cetmix_tower_server.menu_cx_tower_jet_settings_root"
+        action="action_tower_provisioning_profile"
+        groups="cetmix_tower_server.group_manager"
+        sequence="40"
+    />
+</odoo>

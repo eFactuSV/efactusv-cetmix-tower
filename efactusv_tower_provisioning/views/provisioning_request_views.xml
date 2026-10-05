@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_tower_provisioning_request_list" model="ir.ui.view">
+        <field name="name">cx.tower.provisioning.request.list</field>
+        <field name="model">cx.tower.provisioning.request</field>
+        <field name="arch" type="xml">
+            <list
+                decoration-danger="state == 'failed'"
+                decoration-success="state == 'verified'"
+                decoration-warning="state == 'ready_for_review'"
+            >
+                <field name="name" />
+                <field name="contract_id" />
+                <field name="partner_id" />
+                <field name="profile_id" />
+                <field name="hostname" />
+                <field name="state" widget="badge" />
+                <field name="company_id" groups="base.group_multi_company" />
+            </list>
+        </field>
+    </record>
+    <record id="view_tower_provisioning_request_search" model="ir.ui.view">
+        <field name="name">cx.tower.provisioning.request.search</field>
+        <field name="model">cx.tower.provisioning.request</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <field name="contract_id" />
+                <field name="partner_id" />
+                <field name="hostname" />
+                <filter
+                    name="failed"
+                    string="Failed"
+                    domain="[('state', '=', 'failed')]"
+                />
+                <filter
+                    name="review"
+                    string="Ready for Review"
+                    domain="[('state', '=', 'ready_for_review')]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        name="group_state"
+                        string="State"
+                        context="{'group_by': 'state'}"
+                    />
+                    <filter
+                        name="group_profile"
+                        string="Profile"
+                        context="{'group_by': 'profile_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="view_tower_provisioning_request_form" model="ir.ui.view">
+        <field name="name">cx.tower.provisioning.request.form</field>
+        <field name="model">cx.tower.provisioning.request</field>
+        <field name="arch" type="xml">
+            <form create="0" delete="0">
+                <header>
+                    <button
+                        name="action_enqueue"
+                        type="object"
+                        string="Queue"
+                        class="btn-primary"
+                        invisible="state != 'pending'"
+                        groups="cetmix_tower_server.group_manager"
+                    />
+                    <button
+                        name="action_retry"
+                        type="object"
+                        string="Retry"
+                        class="btn-primary"
+                        invisible="state != 'failed'"
+                        groups="cetmix_tower_server.group_manager"
+                    />
+                    <button
+                        name="action_mark_verified"
+                        type="object"
+                        string="Mark Verified"
+                        class="btn-primary"
+                        invisible="state != 'ready_for_review'"
+                        groups="cetmix_tower_server.group_manager"
+                    />
+                    <button
+                        name="action_cancel"
+                        type="object"
+                        string="Cancel"
+                        invisible="state not in ('pending', 'queued', 'failed')"
+                        groups="cetmix_tower_server.group_manager"
+                    />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="pending,queued,provisioning,ready_for_review,verified,failed"
+                    />
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_open_jet"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-rocket"
+                            invisible="not jet_id"
+                        >
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Instance</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="contract_id" />
+                            <field name="partner_id" />
+                            <field name="source_invoice_id" />
+                            <field name="profile_id" />
+                        </group>
+                        <group>
+                            <field name="jet_id" />
+                            <field name="slug" />
+                            <field name="hostname" />
+                            <field name="url" widget="url" />
+                            <field name="attempt_count" />
+                            <field
+                                name="company_id"
+                                groups="base.group_multi_company"
+                            />
+                        </group>
+                    </group>
+                    <group invisible="not last_error">
+                        <field name="last_error" nolabel="1" />
+                    </group>
+                </sheet>
+                <chatter />
+            </form>
+        </field>
+    </record>
+    <record id="action_tower_provisioning_request" model="ir.actions.act_window">
+        <field name="name">Provisioning Requests</field>
+        <field name="res_model">cx.tower.provisioning.request</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tower_provisioning_request_search" />
+    </record>
+    <menuitem
+        id="menu_tower_provisioning_request"
+        name="Provisioning"
+        parent="cetmix_tower_server.menu_cx_tower_jet_root"
+        action="action_tower_provisioning_request"
+        sequence="5"
+    />
+</odoo>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="contract_form_tower_provisioning" model="ir.ui.view">
+        <field name="name">contract.contract.form.tower.provisioning</field>
+        <field name="model">contract.contract</field>
+        <field
+            name="inherit_id"
+            ref="efactusv_tower_contract.contract_contract_form_view"
+        />
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button
+                    name="action_view_tower_provisioning_requests"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-cogs"
+                    invisible="tower_provisioning_request_count == 0"
+                >
+                    <field
+                        name="tower_provisioning_request_count"
+                        widget="statinfo"
+                        string="Provisioning"
+                    />
+                </button>
+            </div>
+            <field name="tower_jet_template_id" position="before">
+                <field
+                    name="tower_provisioning_profile_id"
+                    options="{'no_create': True}"
+                />
+            </field>
+            <button name="action_create_tower_jet" position="attributes">
+                <attribute
+                    name="invisible"
+                >is_terminated or tower_provisioning_profile_id</attribute>
+            </button>
+        </field>
+    </record>
+</odoo>
