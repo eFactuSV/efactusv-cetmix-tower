@@ -124,6 +124,35 @@ class TestContractTower(TransactionCase):
         self.assertTrue(self.contract.is_terminated)
         self.assertEqual(jet.state_id, self.state_stopped)
 
+    def test_billing_user_without_tower_access_can_terminate(self):
+        """A contract manager outside Tower still terminates the contract."""
+        action = self.contract.action_create_tower_jet()
+        jet = self.env["cx.tower.jet"].browse(action["res_id"])
+        jet._bring_to_state(self.state_running)
+        billing_user = self.env["res.users"].create(
+            {
+                "name": "Billing User",
+                "login": "billing-user-tower-contract",
+                "groups_id": [
+                    (
+                        6,
+                        0,
+                        [
+                            self.env.ref("account.group_account_manager").id,
+                            self.env.ref(
+                                "contract_termination.can_terminate_contract"
+                            ).id,
+                        ],
+                    )
+                ],
+            }
+        )
+        self.contract.with_user(billing_user)._terminate_contract(
+            self.terminate_reason, "test", fields.Date.today()
+        )
+        self.assertTrue(self.contract.is_terminated)
+        self.assertEqual(jet.state_id, self.state_stopped)
+
     def test_cancel_termination_restarts_jet(self):
         """Cancelling the termination brings the jet back to running."""
         action = self.contract.action_create_tower_jet()

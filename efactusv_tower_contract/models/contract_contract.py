@@ -145,7 +145,9 @@ class ContractContract(models.Model):
             template_state_field (str): field on cx.tower.jet.template holding
                 the target state (e.g. 'state_on_contract_terminate_id').
         """
-        for contract in self:
+        # Billing users terminate contracts without Tower access: read the jets
+        # as superuser, like the transition below.
+        for contract in self.sudo():
             for jet in contract.tower_jet_ids.filtered("active"):
                 state = jet.jet_template_id[template_state_field]
                 if not state or jet.state_id == state:

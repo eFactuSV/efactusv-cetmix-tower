@@ -3,7 +3,7 @@
 {
     "name": "efactusv Tower Contract",
     "summary": "Link Cetmix Tower SaaS instances (jets) to customer contracts",
-    "version": "18.0.1.1.0",
+    "version": "18.0.1.1.1",
     "category": "Productivity",
     "website": "https://tower.cetmix.com",
     "author": "efactusv",
