@@ -106,3 +106,9 @@ class TestOdooBlueprint(TransactionCase):
             pattern = self.env.ref(f"efactusv_tower_odoo.{xmlid}").validation_pattern
             self.assertRegex("https://s3.example.com/b/k.zip?X-Amz=1&y=2", pattern)
             self.assertNotRegex("https://x.com/a'b", pattern)
+
+    def test_usage_command_reports_one_parseable_line(self):
+        code = self.env.ref("efactusv_tower_odoo.command_usage_odoo").code
+        self.assertIn("EFACTUSV_USAGE users=", code)
+        self.assertIn("pg_database_size", code)
+        self.assertIn("'user_root', 'user_admin'", code)
