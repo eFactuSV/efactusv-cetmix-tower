@@ -112,3 +112,19 @@ class TestOdooBlueprint(TransactionCase):
         self.assertIn("EFACTUSV_USAGE users=", code)
         self.assertIn("pg_database_size", code)
         self.assertIn("'user_root', 'user_admin'", code)
+
+    def test_domain_commands_keep_the_same_proxy_and_certificate(self):
+        add = self.env.ref("efactusv_tower_odoo.command_domain_add").code
+        self.assertIn("server_name {{ custom_domain }};", add)
+        self.assertIn("proxy_pass http://127.0.0.1:{{ odoo_http_port }};", add)
+        self.assertIn("certbot --nginx", add)
+        self.assertIn("-d {{ custom_domain }}", add)
+        remove = self.env.ref("efactusv_tower_odoo.command_domain_remove").code
+        self.assertIn("--cert-name {{ custom_domain }}", remove)
+
+    def test_custom_domain_variable_rejects_unsafe_values(self):
+        pattern = self.env.ref("efactusv_tower_odoo.variable_custom_domain")
+        pattern = pattern.validation_pattern
+        self.assertRegex("erp.miempresa.com", pattern)
+        for bad in ("erp miempresa.com", "erp.miempresa.com;rm", "x'.com", "ERP.COM"):
+            self.assertNotRegex(bad, pattern)

@@ -204,6 +204,50 @@ data_dir = /var/lib/odoo
         ><![CDATA[set -e; users=$(docker compose exec -T db psql -U odoo -d {{ instance_name }} -tAc "select count(*) from res_users u where u.active and not u.share and u.id not in (select res_id from ir_model_data where module = 'base' and model = 'res.users' and name in ('user_root', 'user_admin'))"); db_bytes=$(docker compose exec -T db psql -U odoo -d {{ instance_name }} -tAc "select pg_database_size(current_database())"); files_bytes=$(docker compose exec -T web sh -c 'du -sb /var/lib/odoo/filestore/{{ instance_name }} 2>/dev/null | cut -f1'); echo "EFACTUSV_USAGE users=${users} db_bytes=${db_bytes} filestore_bytes=${files_bytes:-0}"]]></field>
         <field name="access_level">2</field>
     </record>
+    <!-- Dominio propio: un vhost aparte con la misma configuración de proxy
+         y su propio certificado. La dirección efactusv.com sigue funcionando.
+         El madre solo pide esto cuando el DNS del cliente ya apunta aquí. -->
+    <record id="command_domain_add" model="cx.tower.command">
+        <field name="name">Add customer domain</field>
+        <field name="reference">efactusv_odoo_domain_add</field>
+        <field name="action">ssh_command</field>
+        <field
+            name="code"
+        ><![CDATA[set -e; conf=/etc/nginx/sites-available/{{ instance_name }}-custom.conf; cat > "$conf" <<'NGINX'
+server {
+    listen 80;
+    server_name {{ custom_domain }};
+    client_max_body_size 128m;
+    proxy_read_timeout 720s;
+    proxy_send_timeout 720s;
+    location /websocket {
+        proxy_pass http://127.0.0.1:{{ odoo_gevent_port }};
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+    location / {
+        proxy_pass http://127.0.0.1:{{ odoo_http_port }};
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+NGINX
+ln -sfn "$conf" /etc/nginx/sites-enabled/{{ instance_name }}-custom.conf; nginx -t; systemctl reload nginx; certbot --nginx --non-interactive --agree-tos --redirect --keep-until-expiring -m {{ admin_email }} -d {{ custom_domain }}; echo EFACTUSV_DOMAIN_OK]]></field>
+        <field name="access_level">2</field>
+    </record>
+    <record id="command_domain_remove" model="cx.tower.command">
+        <field name="name">Remove customer domain</field>
+        <field name="reference">efactusv_odoo_domain_remove</field>
+        <field name="action">ssh_command</field>
+        <field
+            name="code"
+        ><![CDATA[set -e; rm -f -- /etc/nginx/sites-enabled/{{ instance_name }}-custom.conf /etc/nginx/sites-available/{{ instance_name }}-custom.conf; nginx -t; systemctl reload nginx; certbot delete --non-interactive --cert-name {{ custom_domain }} || true; echo EFACTUSV_DOMAIN_REMOVED]]></field>
+        <field name="access_level">2</field>
+    </record>
     <record id="command_register_dns" model="cx.tower.command">
         <field name="name">Register Odoo OVH DNS</field>
         <field name="reference">efactusv_odoo_register_dns</field>

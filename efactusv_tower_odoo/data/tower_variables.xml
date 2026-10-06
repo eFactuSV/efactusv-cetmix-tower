@@ -61,4 +61,11 @@
         <field name="reference">restore_download_url</field>
         <field name="validation_pattern">^https://[^'\s]+$</field>
     </record>
+    <record id="variable_custom_domain" model="cx.tower.variable">
+        <field name="name">Customer Domain</field>
+        <field name="reference">custom_domain</field>
+        <field
+            name="validation_pattern"
+        >^([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$</field>
+    </record>
 </odoo>
