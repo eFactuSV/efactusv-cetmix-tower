@@ -168,6 +168,30 @@ data_dir = /var/lib/odoo
         ><![CDATA[printf '%s\n' "login = '{{ customer_email }}'; users = env['res.users'].with_context(active_test=False); user = users.search([('login', '=', login)], limit=1) or users.create({'name': login, 'login': login, 'email': login}); user.write({'active': True, 'password': '#!cxtower.secret.EFACTUSV_ODOO_CUSTOMER_PASSWORD!#', 'groups_id': [(4, env.ref('base.group_system').id)]}); env.cr.commit()" | docker compose run -T --rm web odoo shell -d {{ instance_name }} --no-http]]></field>
         <field name="access_level">2</field>
     </record>
+    <!-- Backups: el .zip estándar de Odoo (base + filestore). El VPS no tiene
+         credenciales de S3: el Odoo madre firma una URL temporal de subida o de
+         descarga y la pasa como variable. La opción entrypoint=odoo evita que el
+         entrypoint de la imagen añada argumentos de base al subcomando db. -->
+    <record id="command_backup_odoo" model="cx.tower.command">
+        <field name="name">Backup Odoo database and filestore</field>
+        <field name="reference">efactusv_odoo_backup</field>
+        <field name="action">ssh_command</field>
+        <field name="path">{{ base_dir }}/{{ instance_name }}</field>
+        <field
+            name="code"
+        ><![CDATA[set -e; tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT; docker compose run --rm -T --no-deps --entrypoint odoo web db -c /etc/odoo/odoo.conf dump {{ instance_name }} - > "$tmp/backup.zip"; curl --fail --silent --show-error -X PUT -T "$tmp/backup.zip" '{{ backup_upload_url }}'; echo "EFACTUSV_BACKUP_SIZE=$(stat -c %s "$tmp/backup.zip")"]]></field>
+        <field name="access_level">2</field>
+    </record>
+    <record id="command_restore_odoo" model="cx.tower.command">
+        <field name="name">Restore Odoo backup</field>
+        <field name="reference">efactusv_odoo_restore</field>
+        <field name="action">ssh_command</field>
+        <field name="path">{{ base_dir }}/{{ instance_name }}</field>
+        <field
+            name="code"
+        ><![CDATA[set -e; docker compose stop web; if docker compose run --rm -T --no-deps --entrypoint odoo web db -c /etc/odoo/odoo.conf load --force {{ instance_name }} '{{ restore_download_url }}'; then docker compose start web; echo EFACTUSV_RESTORE_OK; else docker compose start web; exit 1; fi]]></field>
+        <field name="access_level">2</field>
+    </record>
     <record id="command_register_dns" model="cx.tower.command">
         <field name="name">Register Odoo OVH DNS</field>
         <field name="reference">efactusv_odoo_register_dns</field>

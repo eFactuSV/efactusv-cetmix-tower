@@ -88,3 +88,21 @@ class TestOdooBlueprint(TransactionCase):
             action.state_transit_id,
             self.env.ref("cetmix_tower_server.cx_tower_jet_state_restarting"),
         )
+
+    def test_backup_command_streams_standard_dump_to_signed_url(self):
+        code = self.env.ref("efactusv_tower_odoo.command_backup_odoo").code
+        self.assertIn("--entrypoint odoo web db -c /etc/odoo/odoo.conf dump", code)
+        self.assertIn("-X PUT -T", code)
+        self.assertIn("{{ backup_upload_url }}", code)
+        self.assertIn("EFACTUSV_BACKUP_SIZE=", code)
+
+    def test_restore_command_always_restarts_web(self):
+        code = self.env.ref("efactusv_tower_odoo.command_restore_odoo").code
+        self.assertIn("load --force {{ instance_name }}", code)
+        self.assertEqual(code.count("docker compose start web"), 2)
+
+    def test_signed_url_variables_reject_quotes(self):
+        for xmlid in ("variable_backup_upload_url", "variable_restore_download_url"):
+            pattern = self.env.ref(f"efactusv_tower_odoo.{xmlid}").validation_pattern
+            self.assertRegex("https://s3.example.com/b/k.zip?X-Amz=1&y=2", pattern)
+            self.assertNotRegex("https://x.com/a'b", pattern)

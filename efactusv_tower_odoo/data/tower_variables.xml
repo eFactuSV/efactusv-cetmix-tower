@@ -51,4 +51,14 @@
             name="validation_pattern"
         >^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$</field>
     </record>
+    <record id="variable_backup_upload_url" model="cx.tower.variable">
+        <field name="name">Backup Upload URL</field>
+        <field name="reference">backup_upload_url</field>
+        <field name="validation_pattern">^https://[^'\s]+$</field>
+    </record>
+    <record id="variable_restore_download_url" model="cx.tower.variable">
+        <field name="name">Restore Download URL</field>
+        <field name="reference">restore_download_url</field>
+        <field name="validation_pattern">^https://[^'\s]+$</field>
+    </record>
 </odoo>
